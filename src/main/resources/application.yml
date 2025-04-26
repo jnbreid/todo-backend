@@ -1,0 +1,7 @@
+spring:
+  application:
+    name: todoapp
+  sql:
+    init:
+      mode: always
+      schema-locations: classpath*:sql/schema.sql
