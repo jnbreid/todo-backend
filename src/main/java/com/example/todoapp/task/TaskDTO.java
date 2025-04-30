@@ -3,11 +3,24 @@ package com.example.todoapp.task;
 import java.time.LocalDate;
 
 public class TaskDTO {
+    private Long id;
     private String name;
     private LocalDate deadline;
     private int priority;
     private boolean complete;
     private Long userId;
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public boolean isComplete() {
+        return complete;
+    }
 
     public String getName() {
         return name;

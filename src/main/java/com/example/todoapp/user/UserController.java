@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping
+@RequestMapping("/api/users")
 public class UserController {
     private final UserService userService;
 
@@ -17,11 +17,18 @@ public class UserController {
     }
 
     @PostMapping("/register")
-    public ResponseEntity<String> registerUser(@RequestBody User user) {
+    public ResponseEntity<String> registerUser(@RequestBody UserDTO userDTO) {
+        User user = UserMapper.fromDTO(userDTO);
+        userService.registerUser(user);
+        return ResponseEntity.status(HttpStatus.CREATED).body("User created successfully.");
 
-            userService.registerUser(user);
-            return ResponseEntity.status(HttpStatus.CREATED).body("User created successfully.");
+    }
 
+    @PostMapping("/login")
+    public ResponseEntity<UserDTO> login(@RequestBody UserDTO userDTO) {
+        User authenticated = userService.authenticate(userDTO.getUsername(), userDTO.getPassword());
+        UserDTO response = UserMapper.toDTO(authenticated);
+        return ResponseEntity.ok(response);
     }
 
 }
