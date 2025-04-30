@@ -2,6 +2,7 @@ package com.example.todoapp.task;
 
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
@@ -13,10 +14,14 @@ public class TaskService {
         this.taskRepository = taskRepository;
     }
 
-    public void createTask(Task task) {
-        // validation stuff
-
+    public boolean createTask(Task task) {
+        if(task.getPriority() > 5 || task.getPriority() < 1) {
+            throw new IllegalArgumentException("Priority outside priority levels.");
+        } else if (task.getDeadline().isBefore(LocalDate.now())) {
+            throw new IllegalArgumentException("Deadline can not be in the past.");
+        }
         taskRepository.create(task);
+        return true;
     }
 
     public List<Task> getTasksForUser(Long userId) {
