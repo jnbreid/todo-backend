@@ -12,6 +12,18 @@ public class Task {
     private Boolean completed;
     private Long userId;
 
+    public Task() {
+    }
+
+    public Task(Long id, String name, LocalDate deadline, Integer priority, Boolean completed, Long userId) {
+        this.id = id;
+        this.name = name;
+        this.deadline = deadline;
+        this.priority = priority;
+        this.completed = completed;
+        this.userId = userId;
+    }
+
     public Long getId() {
         return id;
     }

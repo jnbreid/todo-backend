@@ -7,6 +7,7 @@ import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 @Transactional
@@ -18,7 +19,6 @@ public class UserRepository {
     }
 
     RowMapper<User> rowMapper = new UserRowMapper();
-    ResultSetExtractor<User> resultSetExtractor = new UserResultSetExtractor();
 
     public int create(User user) {
         String sql = "INSERT INTO users (username, password) VALUES (?, ?)";
@@ -30,17 +30,16 @@ public class UserRepository {
         return client.sql(sql).query(rowMapper).list();
     }
 
-    public User getItem(String username) {
-        String sql = "SELECT FROM users WHERE username = ?";
-        return client.sql(sql).params(username).query(resultSetExtractor);
+    public Optional<User> findByUsername(String username) {
+        String sql = "SELECT id, username, password FROM users WHERE username = ?";
+        return client.sql(sql).params(username).query(rowMapper).optional();
     }
-
-
 
     public int delete(String username) {
         String sql = "DELETE FROM users WHERE username = ?";
         return client.sql(sql).params(username).update();
     }
+
     public int delete(Long id) {
         String sql = "DELETE FROM users WHERE id = ?";
         return client.sql(sql).params(id).update();

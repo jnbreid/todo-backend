@@ -6,6 +6,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -24,7 +25,7 @@ public class UserRepositoryTest {
     }
 
     @Test
-    void createFindAllTest() {
+    void FindAllTest() {
         User user = new User(null, "username", "pswd");
         userRepository.create(user);
 
@@ -36,5 +37,42 @@ public class UserRepositoryTest {
         assertNotNull(newUser.getId());
         assertEquals(user.getUsername(), newUser.getUsername());
         assertEquals(user.getPassword(), newUser.getPassword());
+    }
+
+    @Test
+    void findByUsernameTest() {
+        User user = new User(null, "username", "pswd");
+        userRepository.create(user);
+
+        Optional<User> newOptional = userRepository.findByUsername(user.getUsername());
+
+        // test if item can be found if it exists
+        assertFalse(newOptional.isEmpty());
+
+        User newUser = newOptional.get();
+
+        assertNotNull(newUser.getId());
+        assertEquals(user.getId(), newUser.getId());
+        assertEquals(user.getUsername(), newUser.getUsername());
+        assertEquals(user.getPassword(), newUser.getPassword());
+
+        // test behavior if item does not exist
+        Optional<User> noUser = userRepository.findByUsername("notExisting");
+        assertTrue(noUser.isEmpty());
+    }
+
+    @Test
+    void deleteTest() {
+        User user = new User(null, "username", "pswd");
+        userRepository.create(user);
+
+        Optional<User> newUser = userRepository.findByUsername(user.getUsername());
+        assertFalse(newUser.isEmpty());
+
+        int delCount = userRepository.delete(user.getUsername());
+        assertEquals(1, delCount);
+
+        Optional<User> delUser = userRepository.findByUsername(user.getUsername());
+        assertTrue(delUser.isEmpty());
     }
 }
