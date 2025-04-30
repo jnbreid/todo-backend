@@ -33,6 +33,12 @@ public class TaskService {
     }
 
     public boolean updateTask(Task task) {
+        if(task.getPriority() > 5 || task.getPriority() < 1) {
+            throw new IllegalArgumentException("Priority outside priority levels.");
+        } else if (task.getDeadline().isBefore(LocalDate.now())) {
+            throw new IllegalArgumentException("Deadline can not be in the past.");
+        }
+
         Optional<Task> existingTask = taskRepository.findById(task.getId());
         if(existingTask.isPresent()) {
             taskRepository.update(task, task.getId());
