@@ -10,6 +10,9 @@ import java.util.Optional;
 public class TaskService {
     private final TaskRepository taskRepository;
 
+    private static final int MIN_PRIORITY = 1;
+    private static final int MAX_PRIORITY = 5;
+
     public TaskService(TaskRepository taskRepository) {
         this.taskRepository = taskRepository;
     }
@@ -20,18 +23,17 @@ public class TaskService {
             return taskOptional.get();
         }
         else {
-            throw new IllegalArgumentException("Task with ID " + taskId + "not found.");
+            throw new IllegalArgumentException("Task with ID " + taskId + " not found.");
         }
     }
 
-    public boolean createTask(Task task) {
-        if(task.getPriority() > 5 || task.getPriority() < 1) {
+    public void createTask(Task task) {
+        if(task.getPriority() > MAX_PRIORITY || task.getPriority() < MIN_PRIORITY) {
             throw new IllegalArgumentException("Priority outside priority levels.");
         } else if (task.getDeadline().isBefore(LocalDate.now())) {
             throw new IllegalArgumentException("Deadline can not be in the past.");
         }
         taskRepository.create(task);
-        return true;
     }
 
     public List<Task> getTasksForUser(Long userId) {
