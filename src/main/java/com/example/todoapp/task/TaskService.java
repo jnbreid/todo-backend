@@ -14,6 +14,16 @@ public class TaskService {
         this.taskRepository = taskRepository;
     }
 
+    private Task requiresExistingTask(Long taskId) {
+        Optional<Task> taskOptional = taskRepository.findById(taskId);
+        if (taskOptional.isPresent()) {
+            return taskOptional.get();
+        }
+        else {
+            throw new IllegalArgumentException("Task with ID " + taskId + "not found.");
+        }
+    }
+
     public boolean createTask(Task task) {
         if(task.getPriority() > 5 || task.getPriority() < 1) {
             throw new IllegalArgumentException("Priority outside priority levels.");
@@ -28,43 +38,31 @@ public class TaskService {
         return taskRepository.findSet(userId);
     }
 
-    public Optional<Task> getTaskById(Long taskId) {
-        return taskRepository.findById(taskId);
+    public Task getTaskById(Long taskId) {
+        return requiresExistingTask(taskId);
+
     }
 
-    public boolean updateTask(Task task) {
+    public void updateTask(Task task) {
         if(task.getPriority() > 5 || task.getPriority() < 1) {
             throw new IllegalArgumentException("Priority outside priority levels.");
         } else if (task.getDeadline().isBefore(LocalDate.now())) {
             throw new IllegalArgumentException("Deadline can not be in the past.");
         }
 
-        Optional<Task> existingTask = taskRepository.findById(task.getId());
-        if(existingTask.isPresent()) {
-            taskRepository.update(task, task.getId());
-            return true;
-        }
-        return false;
+        Task foundTask = requiresExistingTask(task.getId());
+        taskRepository.update(task, task.getId());
     }
 
-    public boolean markTaskAsCompleted(Long taskId) {
-        Optional<Task> existingTask = taskRepository.findById(taskId);
-        if (existingTask.isPresent()) {
-            Task task = existingTask.get();
-            task.setCompleted(true);
-            taskRepository.update(task, task.getId());
-            return true;
-        }
-        return false;
+    public void markTaskAsCompleted(Long taskId) {
+        Task task = requiresExistingTask(taskId);
+
+        task.setCompleted(true);
+        taskRepository.update(task, task.getId());
     }
 
-    public boolean deleteTask(Long taskId){
-        Optional<Task> existingTask = taskRepository.findById(taskId);
-        if (existingTask.isPresent()) {
-            taskRepository.delete(taskId);
-            return true;
-        }
-        return false;
+    public void deleteTask(Long taskId){
+        Task task = requiresExistingTask(taskId);
+        taskRepository.delete(taskId);
     }
-
 }
