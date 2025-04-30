@@ -2,17 +2,19 @@ package com.example.todoapp.user;
 
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.stereotype.Service;
 
 import java.util.Optional;
 
+@Service
 public class UserService {
     private final UserRepository userRepository;
-    //private final PasswordEncoder passwordEncoder;
+    private final PasswordEncoder passwordEncoder;
 
-    public UserService(UserRepository userRepository) {//,
-                       //PasswordEncoder passwordEncoder) {
+    public UserService(UserRepository userRepository,
+                       PasswordEncoder passwordEncoder) {
         this.userRepository = userRepository;
-        //this.passwordEncoder = passwordEncoder;
+        this.passwordEncoder = passwordEncoder;
     }
 
     private void validateUser(User user) {
@@ -34,18 +36,11 @@ public class UserService {
     }
 
     public User authenticate(String username, String rawPassword) {
-        //Optional<User> foundUser = userRepository.findByUsername(username).filter(user -> passwordEncoder.matches(rawPassword, user.getPassword()));
-        //if (foundUser.isEmpty()) {
-        //    throw new BadCredentialsException("Invalid password or username.");
-        //}
-        //return foundUser.get();
-
-        Optional<User> foundUser = userRepository.findByUsername(username);
-        if (foundUser.isPresent() && foundUser.get().getUsername().equals(rawPassword)) {
-            return foundUser.get();
-        }
-        else {
+        Optional<User> foundUser = userRepository.findByUsername(username).filter(user -> passwordEncoder.matches(rawPassword, user.getPassword()));
+        if (foundUser.isEmpty()) {
             throw new BadCredentialsException("Invalid password or username.");
         }
+        return foundUser.get();
+
     }
 }
