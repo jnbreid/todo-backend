@@ -17,10 +17,10 @@ public class UserController {
     }
 
     @PostMapping("/register")
-    public ResponseEntity<String> registerUser(@RequestBody UserDTO userDTO) {
+    public ResponseEntity<Void> registerUser(@RequestBody UserDTO userDTO) {
         User user = UserMapper.fromDTO(userDTO);
         userService.registerUser(user);
-        return ResponseEntity.status(HttpStatus.CREATED).body("User created successfully.");
+        return ResponseEntity.status(HttpStatus.CREATED).build();
 
     }
 
