@@ -30,7 +30,7 @@ public class UserService {
             throw new IllegalArgumentException("Creating user failed.");
         }
 
-        String hashedPassword = user.getPassword();//passwordEncoder.encode(user.getPassword());
+        String hashedPassword = passwordEncoder.encode(user.getPassword());
         user.setPassword(hashedPassword);
         userRepository.create(user);
     }
