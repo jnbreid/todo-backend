@@ -37,8 +37,23 @@ public class TaskService {
     }
 
     public boolean markTaskAsCompleted(Long taskId) {
-        Optional<Task> task = taskRepository.findById(taskId);
-        if
+        Optional<Task> existingTask = taskRepository.findById(taskId);
+        if (existingTask.isPresent()) {
+            Task task = existingTask.get();
+            task.setCompleted(true);
+            taskRepository.update(task, task.getId());
+            return true;
+        }
+        return false;
+    }
+
+    public boolean deleteTask(Long taskId){
+        Optional<Task> existingTask = taskRepository.findById(taskId);
+        if (existingTask.isPresent()) {
+            taskRepository.delete(taskId);
+            return true;
+        }
+        return false;
     }
 
 }
