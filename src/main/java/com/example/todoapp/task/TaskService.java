@@ -27,12 +27,20 @@ public class TaskService {
         }
     }
 
-    public void createTask(Task task) {
+    private void validateTask(Task task) {
         if(task.getPriority() > MAX_PRIORITY || task.getPriority() < MIN_PRIORITY) {
             throw new IllegalArgumentException("Priority outside priority levels.");
-        } else if (task.getDeadline().isBefore(LocalDate.now())) {
+        }
+        if (task.getDeadline().isBefore(LocalDate.now())) {
             throw new IllegalArgumentException("Deadline can not be in the past.");
         }
+        if (task.getName().length() > 80) {
+            throw new IllegalArgumentException("Task name to long. 80 characters max.");
+        }
+    }
+
+    public void createTask(Task task) {
+        validateTask(task);
         taskRepository.create(task);
     }
 
@@ -46,11 +54,7 @@ public class TaskService {
     }
 
     public void updateTask(Task task) {
-        if(task.getPriority() > 5 || task.getPriority() < 1) {
-            throw new IllegalArgumentException("Priority outside priority levels.");
-        } else if (task.getDeadline().isBefore(LocalDate.now())) {
-            throw new IllegalArgumentException("Deadline can not be in the past.");
-        }
+        validateTask(task);
 
         Task foundTask = requiresExistingTask(task.getId());
         taskRepository.update(task, task.getId());
