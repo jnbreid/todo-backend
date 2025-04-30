@@ -62,6 +62,33 @@ public class UserRepositoryTest {
     }
 
     @Test
+    void findByIdTest() {
+        User user = new User(null, "username", "pswd");
+        userRepository.create(user);
+
+        List<User> newUsers = userRepository.findAll();
+        assertFalse(newUsers.isEmpty());
+        User IdUser = newUsers.getFirst();
+
+        Optional<User> newOptional = userRepository.findById(IdUser.getId());
+
+        // test if item can be found if it exists
+        assertFalse(newOptional.isEmpty());
+
+        User newUser = newOptional.get();
+
+        assertNotNull(newUser.getId());
+        assertEquals(user.getId(), newUser.getId());
+        assertEquals(user.getUsername(), newUser.getUsername());
+        assertEquals(user.getPassword(), newUser.getPassword());
+
+        // test behavior if item does not exist
+        Optional<User> noUser = userRepository.findByUsername("notExisting");
+        assertTrue(noUser.isEmpty());
+    }
+
+
+    @Test
     void deleteTest() {
         User user = new User(null, "username", "pswd");
         userRepository.create(user);

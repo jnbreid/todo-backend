@@ -35,6 +35,11 @@ public class UserRepository {
         return client.sql(sql).params(username).query(rowMapper).optional();
     }
 
+    public Optional<User> findById(Long userId) {
+        String sql = "SELECT id, username, password FROM users WHERE userId = ?";
+        return client.sql(sql).params(userId).query(rowMapper).optional();
+    }
+
     public int delete(String username) {
         String sql = "DELETE FROM users WHERE username = ?";
         return client.sql(sql).params(username).update();
