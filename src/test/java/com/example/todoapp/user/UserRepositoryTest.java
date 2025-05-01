@@ -1,18 +1,34 @@
 package com.example.todoapp.user;
 
+import net.bytebuddy.utility.dispatcher.JavaDispatcher;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
+import org.testcontainers.containers.PostgreSQLContainer;
 
 import java.util.List;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+
 @SpringBootTest
 @Transactional
 public class UserRepositoryTest {
+
+
+    static PostgreSQLContainer<?> postgreSQLContainer = new PostgreSQLContainer<>("postgres:13")
+            .withDatabaseName("testdb")
+            .withUsername("testuser")
+            .withPassword("secret");
+
+    @BeforeAll
+    public static void setUp() {
+        postgreSQLContainer.start();
+    }
+
 
     @Autowired
     private UserRepository userRepository;

@@ -12,6 +12,7 @@ public class TaskService {
 
     private static final int MIN_PRIORITY = 1;
     private static final int MAX_PRIORITY = 5;
+    private static final int MAX_NAME = 80;
 
     public TaskService(TaskRepository taskRepository) {
         this.taskRepository = taskRepository;
@@ -34,7 +35,7 @@ public class TaskService {
         if (task.getDeadline().isBefore(LocalDate.now())) {
             throw new IllegalArgumentException("Deadline can not be in the past.");
         }
-        if (task.getName().length() > 80) {
+        if (task.getName().length() > MAX_NAME) {
             throw new IllegalArgumentException("Task name to long. 80 characters max.");
         }
     }

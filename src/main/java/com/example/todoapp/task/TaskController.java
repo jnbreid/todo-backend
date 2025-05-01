@@ -48,7 +48,7 @@ public class TaskController {
     @PatchMapping("/{id}/complete")
     public ResponseEntity<Void> markTaskAsCompleted(@PathVariable Long id) {
         taskService.markTaskAsCompleted(id);
-        return ResponseEntity.noContent().build();
+        return ResponseEntity.ok().build();
     }
 
     @DeleteMapping("/{id}")
