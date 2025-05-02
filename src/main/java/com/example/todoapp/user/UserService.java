@@ -19,7 +19,7 @@ public class UserService {
 
     private void validateUser(User user) {
         if(user.getUsername().length() > 60) {
-            throw new IllegalArgumentException("Username name to long. 60 characters max.");
+            throw new IllegalArgumentException("Username to long. 60 characters max.");
         }
     }
 
