@@ -5,7 +5,6 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.simple.JdbcClient;
 import org.springframework.jdbc.datasource.SingleConnectionDataSource;
 import org.springframework.transaction.annotation.Transactional;
@@ -26,15 +25,17 @@ import static org.junit.jupiter.api.Assertions.*;
 public class UserRepositoryTest {
 
     @Container
-    private static PostgreSQLContainer<?> postgreSQLContainer = new PostgreSQLContainer<>("postgres:13")
+    private static final PostgreSQLContainer<?> postgreSQLContainer = new PostgreSQLContainer<>("postgres:latest")
             .withDatabaseName("testdb")
             .withUsername("testuser")
-            .withPassword("secret")
-            .withInitScript("schema.sql");
+            .withPassword("secret");
+            //.withInitScript("schema.sql");
 
 
     //@Autowired
     private UserRepository userRepository;
+    private JdbcClient jdbcClient;
+
 
     @BeforeAll
     void setUp() {
