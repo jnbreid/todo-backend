@@ -33,9 +33,7 @@ public class UserRepositoryTest {
             .withInitScript("schema.sql");
 
 
-
-    private JdbcClient jdbcClient;
-    @Autowired
+    //@Autowired
     private UserRepository userRepository;
 
     @BeforeAll
@@ -49,8 +47,8 @@ public class UserRepositoryTest {
                 true
         );
 
-        jdbcTemplate = new JdbcTemplate(dataSource);
-
+        JdbcClient jdbcClient = JdbcClient.create(dataSource);
+        userRepository = new UserRepository(jdbcClient);
     }
 
     @Test
