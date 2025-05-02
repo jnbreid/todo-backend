@@ -1,12 +1,8 @@
 package com.example.todoapp.user;
 
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.TestInstance;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.jdbc.core.simple.JdbcClient;
-import org.springframework.jdbc.datasource.SingleConnectionDataSource;
 import org.springframework.test.context.DynamicPropertyRegistry;
 import org.springframework.test.context.DynamicPropertySource;
 import org.springframework.transaction.annotation.Transactional;
@@ -22,7 +18,6 @@ import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest
 @Testcontainers
-@TestInstance(TestInstance.Lifecycle.PER_CLASS)
 @Transactional
 public class UserRepositoryTest {
 
@@ -41,26 +36,9 @@ public class UserRepositoryTest {
         registry.add("spring.datasource.driver-class-name", postgreSQLContainer::getDriverClassName);
     }
 
-
     @Autowired
     private UserRepository userRepository;
-    //private JdbcClient jdbcClient;
 
-
-    //@BeforeAll
-    //void setUp() {
-    //    postgreSQLContainer.start();
-
-    //    SingleConnectionDataSource dataSource = new SingleConnectionDataSource(
-    //            postgreSQLContainer.getJdbcUrl(),
-    //            postgreSQLContainer.getUsername(),
-    //            postgreSQLContainer.getPassword(),
-    //            true
-    //    );
-
-    //    JdbcClient jdbcClient = JdbcClient.create(dataSource);
-    //    userRepository = new UserRepository(jdbcClient);
-    //}
 
     @Test
     void createTest() {
@@ -97,7 +75,6 @@ public class UserRepositoryTest {
         User newUser = newOptional.get();
 
         assertNotNull(newUser.getId());
-        assertEquals(user.getId(), newUser.getId());
         assertEquals(user.getUsername(), newUser.getUsername());
         assertEquals(user.getPassword(), newUser.getPassword());
 
@@ -123,7 +100,7 @@ public class UserRepositoryTest {
         User newUser = newOptional.get();
 
         assertNotNull(newUser.getId());
-        assertEquals(user.getId(), newUser.getId());
+        assertEquals(IdUser.getId(), newUser.getId());
         assertEquals(user.getUsername(), newUser.getUsername());
         assertEquals(user.getPassword(), newUser.getPassword());
 

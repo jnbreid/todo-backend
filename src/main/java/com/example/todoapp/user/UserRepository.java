@@ -36,7 +36,7 @@ public class UserRepository {
     }
 
     public Optional<User> findById(Long userId) {
-        String sql = "SELECT id, username, password FROM users WHERE userId = ?";
+        String sql = "SELECT id, username, password FROM users WHERE id = ?";
         return client.sql(sql).params(userId).query(rowMapper).optional();
     }
 
