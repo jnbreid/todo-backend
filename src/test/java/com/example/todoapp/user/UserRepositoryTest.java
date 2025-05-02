@@ -1,12 +1,17 @@
 package com.example.todoapp.user;
 
-import net.bytebuddy.utility.dispatcher.JavaDispatcher;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestInstance;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.simple.JdbcClient;
+import org.springframework.jdbc.datasource.SingleConnectionDataSource;
 import org.springframework.transaction.annotation.Transactional;
 import org.testcontainers.containers.PostgreSQLContainer;
+import org.testcontainers.junit.jupiter.Container;
+import org.testcontainers.junit.jupiter.Testcontainers;
 
 import java.util.List;
 import java.util.Optional;
@@ -15,23 +20,38 @@ import static org.junit.jupiter.api.Assertions.*;
 
 
 @SpringBootTest
+@Testcontainers
+@TestInstance(TestInstance.Lifecycle.PER_CLASS)
 @Transactional
 public class UserRepositoryTest {
 
-
-    static PostgreSQLContainer<?> postgreSQLContainer = new PostgreSQLContainer<>("postgres:13")
+    @Container
+    private static PostgreSQLContainer<?> postgreSQLContainer = new PostgreSQLContainer<>("postgres:13")
             .withDatabaseName("testdb")
             .withUsername("testuser")
-            .withPassword("secret");
-
-    @BeforeAll
-    public static void setUp() {
-        postgreSQLContainer.start();
-    }
+            .withPassword("secret")
+            .withInitScript("schema.sql");
 
 
+
+    private JdbcClient jdbcClient;
     @Autowired
     private UserRepository userRepository;
+
+    @BeforeAll
+    void setUp() {
+        postgreSQLContainer.start();
+
+        SingleConnectionDataSource dataSource = new SingleConnectionDataSource(
+                postgreSQLContainer.getJdbcUrl(),
+                postgreSQLContainer.getUsername(),
+                postgreSQLContainer.getPassword(),
+                true
+        );
+
+        jdbcTemplate = new JdbcTemplate(dataSource);
+
+    }
 
     @Test
     void createTest() {
