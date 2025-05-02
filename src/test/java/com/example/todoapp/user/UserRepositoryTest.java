@@ -7,6 +7,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.jdbc.core.simple.JdbcClient;
 import org.springframework.jdbc.datasource.SingleConnectionDataSource;
+import org.springframework.test.context.DynamicPropertyRegistry;
+import org.springframework.test.context.DynamicPropertySource;
 import org.springframework.transaction.annotation.Transactional;
 import org.testcontainers.containers.PostgreSQLContainer;
 import org.testcontainers.junit.jupiter.Container;
@@ -28,29 +30,37 @@ public class UserRepositoryTest {
     private static final PostgreSQLContainer<?> postgreSQLContainer = new PostgreSQLContainer<>("postgres:latest")
             .withDatabaseName("testdb")
             .withUsername("testuser")
-            .withPassword("secret");
-            //.withInitScript("schema.sql");
+            .withPassword("secret")
+            .withInitScript("schema.sql");
 
-
-    //@Autowired
-    private UserRepository userRepository;
-    private JdbcClient jdbcClient;
-
-
-    @BeforeAll
-    void setUp() {
-        postgreSQLContainer.start();
-
-        SingleConnectionDataSource dataSource = new SingleConnectionDataSource(
-                postgreSQLContainer.getJdbcUrl(),
-                postgreSQLContainer.getUsername(),
-                postgreSQLContainer.getPassword(),
-                true
-        );
-
-        JdbcClient jdbcClient = JdbcClient.create(dataSource);
-        userRepository = new UserRepository(jdbcClient);
+    @DynamicPropertySource
+    static void overrideProps(DynamicPropertyRegistry registry) {
+        registry.add("spring.datasource.url", postgreSQLContainer::getJdbcUrl);
+        registry.add("spring.datasource.username", postgreSQLContainer::getUsername);
+        registry.add("spring.datasource.password", postgreSQLContainer::getPassword);
+        registry.add("spring.datasource.driver-class-name", postgreSQLContainer::getDriverClassName);
     }
+
+
+    @Autowired
+    private UserRepository userRepository;
+    //private JdbcClient jdbcClient;
+
+
+    //@BeforeAll
+    //void setUp() {
+    //    postgreSQLContainer.start();
+
+    //    SingleConnectionDataSource dataSource = new SingleConnectionDataSource(
+    //            postgreSQLContainer.getJdbcUrl(),
+    //            postgreSQLContainer.getUsername(),
+    //            postgreSQLContainer.getPassword(),
+    //            true
+    //    );
+
+    //    JdbcClient jdbcClient = JdbcClient.create(dataSource);
+    //    userRepository = new UserRepository(jdbcClient);
+    //}
 
     @Test
     void createTest() {
