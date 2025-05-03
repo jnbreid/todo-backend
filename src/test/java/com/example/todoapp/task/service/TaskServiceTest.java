@@ -2,6 +2,7 @@ package com.example.todoapp.task.service;
 
 import com.example.todoapp.task.Task;
 import com.example.todoapp.task.repository.TaskRepository;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -9,6 +10,8 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.time.LocalDate;
+import java.util.Collections;
+import java.util.List;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -23,70 +26,166 @@ class TaskServiceTest {
     @InjectMocks
     private TaskService taskService;
 
+    private Task task;
+
+    @BeforeEach
+    void setUp() {
+        task = new Task();
+        task.setId(1L);
+        task.setName("name");
+        task.setPriority(3);
+        task.setDeadline(LocalDate.now().plusDays(1));
+        task.setUserId(1L);
+        task.setCompleted(false);
+    }
+
     @Test
     void createTask_success() {
-        Task task = new Task(null, "Test Task", LocalDate.now().plusDays(1), 3, false, 1L);
-        taskService.createTask(task);
+
+        assertDoesNotThrow(() -> taskService.createTask(task));
+
         verify(taskRepository).create(task);
     }
 
     @Test
-    void createTask_fails_dueToPastDeadline() {
-        Task task = new Task(null, "Test", LocalDate.now().minusDays(1), 3, false, 1L);
-        assertThrows(IllegalArgumentException.class, () -> taskService.createTask(task));
+    void createTask_Failure_PriorityTooHigh() {
+        task.setPriority(20);
+
+        IllegalArgumentException ex = assertThrows(IllegalArgumentException.class, () ->
+                taskService.createTask(task));
+
+        assertEquals("Priority outside priority levels.", ex.getMessage());
         verify(taskRepository, never()).create(any());
     }
 
     @Test
-    void getTaskById_returnsTaskIfExists() {
-        Task task = new Task(1L, "Task", LocalDate.now().plusDays(1), 2, false, 1L);
-        when(taskRepository.findById(1L)).thenReturn(Optional.of(task));
+    void createTask_Failure_PriorityTooLow() {
+        task.setPriority(0);
 
-        Task result = taskService.getTaskById(1L);
-        assertEquals(task, result);
+        IllegalArgumentException ex = assertThrows(IllegalArgumentException.class, () ->
+                taskService.createTask(task));
+
+        assertEquals("Priority outside priority levels.", ex.getMessage());
+        verify(taskRepository, never()).create(any());
     }
 
     @Test
-    void getTaskById_throwsIfNotExists() {
-        when(taskRepository.findById(999L)).thenReturn(Optional.empty());
+    void createTask_Failure_DateInPast() {
+        task.setDeadline(LocalDate.now().minusDays(1));
 
-        assertThrows(IllegalArgumentException.class, () -> taskService.getTaskById(999L));
+        IllegalArgumentException ex = assertThrows(IllegalArgumentException.class, () ->
+                taskService.createTask(task));
+
+        assertEquals("Deadline can not be in the past.", ex.getMessage());
+        verify(taskRepository, never()).create(any());
     }
 
     @Test
-    void markTaskAsCompleted_success() {
-        Task task = new Task(1L, "Task", LocalDate.now().plusDays(1), 2, false, 1L);
-        when(taskRepository.findById(1L)).thenReturn(Optional.of(task));
+    void createTask_Failure_NameTooLong() {
+        task.setName("a".repeat(81));
 
-        taskService.markTaskAsCompleted(1L);
+        IllegalArgumentException ex = assertThrows(IllegalArgumentException.class, () ->
+                taskService.createTask(task));
 
-        assertTrue(task.getCompleted());
-        verify(taskRepository).update(task, 1L);
+        assertEquals("Task name to long. 80 characters max.", ex.getMessage());
+        verify(taskRepository, never()).create(any());
+    }
+
+
+    @Test
+    void getTasksForUserTest_Success() {
+        Task task2 = new Task();
+        task2.setName("name2");
+        task2.setPriority(4);
+        task2.setDeadline(LocalDate.now().plusDays(2));
+        task2.setUserId(1L);
+        task2.setCompleted(false);
+
+        Long userId = task.getUserId();
+
+        List<Task> mockTasks = List.of(task, task2);
+
+        when(taskRepository.findSet(userId)).thenReturn(mockTasks);
+
+        List<Task> results = taskService.getTasksForUser(userId);
+
+        assertEquals(2, results.size());
+        assertEquals("name", results.getFirst().getName());
+        assertEquals(4, task2.getPriority());
+        verify(taskRepository).findSet(userId);
     }
 
     @Test
-    void deleteTask_success() {
-        Task task = new Task(1L, "Task", LocalDate.now().plusDays(1), 3, false, 1L);
-        when(taskRepository.findById(1L)).thenReturn(Optional.of(task));
+    void getTasksForUserTest_NoTasksExist() {
+        Long userId = 1L;
 
-        taskService.deleteTask(1L);
-        verify(taskRepository).delete(1L);
+        when(taskRepository.findSet(userId)).thenReturn(Collections.emptyList());
+
+        List<Task> results = taskService.getTasksForUser(userId);
+
+        assertNotNull(results);
+        assertTrue(results.isEmpty());
+        verify(taskRepository).findSet(userId);
     }
 
     @Test
-    void updateTask_valid() {
-        Task task = new Task(1L, "Updated Task", LocalDate.now().plusDays(2), 2, false, 1L);
-        when(taskRepository.findById(1L)).thenReturn(Optional.of(task));
+    void getTAskByIkTest_Success() {
+        Long taskId = task.getId();
+
+        when(taskRepository.findById(taskId)).thenReturn(Optional.of(task));
+
+        Task result = taskService.getTaskById(taskId);
+
+        assertNotNull(result);
+        assertEquals(task.getId(), result.getId());
+        verify(taskRepository).findById(taskId);
+    }
+
+    @Test
+    void getTAskByIkTest_NotExistingTask() {
+        Long taskId = 1L;
+
+        when(taskRepository.findById(taskId)).thenReturn(Optional.empty());
+
+        assertThrows(IllegalArgumentException.class, () ->
+                taskService.getTaskById(taskId));
+
+        verify(taskRepository).findById(taskId);
+    }
+
+    @Test
+    void updateTaskTest() {
+        Long taskId = task.getId();
+
+        when(taskRepository.findById(taskId)).thenReturn(Optional.of(task));
 
         taskService.updateTask(task);
-        verify(taskRepository).update(task, 1L);
+
+        verify(taskRepository).update(task, taskId);
     }
 
     @Test
-    void updateTask_invalidPriority() {
-        Task task = new Task(1L, "Bad Priority", LocalDate.now().plusDays(1), 99, false, 1L);
-        when(taskRepository.findById(1L)).thenReturn(Optional.of(task));
+    void deleteTaskTest_Success() {
+        Long taskId = task.getId();
 
-        assertThrows(IllegalArgumentException.class, () -> taskService.updateTask(task));
+        when(taskRepository.findById(taskId)).thenReturn(Optional.of(task));
+
+        taskService.deleteTask(taskId);
+
+        verify(taskRepository).delete(taskId);
     }
+
+    @Test
+    void deleteTaskTest_NotExistingTask() {
+        Long taskId = 1L;
+
+        when(taskRepository.findById(taskId)).thenReturn(Optional.empty());
+
+        assertThrows(IllegalArgumentException.class, () ->
+                taskService.deleteTask(taskId));
+
+        verify(taskRepository, never()).delete(anyLong());
+    }
+
+
 }

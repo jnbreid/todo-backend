@@ -53,13 +53,12 @@ public class TaskService {
 
     public Task getTaskById(Long taskId) {
         return requiresExistingTask(taskId);
-
     }
 
     public void updateTask(Task task) {
         validateTask(task);
 
-        Task foundTask = requiresExistingTask(task.getId());
+        requiresExistingTask(task.getId());
         taskRepository.update(task, task.getId());
     }
 
@@ -71,7 +70,7 @@ public class TaskService {
     }
 
     public void deleteTask(Long taskId){
-        Task task = requiresExistingTask(taskId);
+        requiresExistingTask(taskId);
         taskRepository.delete(taskId);
     }
 }

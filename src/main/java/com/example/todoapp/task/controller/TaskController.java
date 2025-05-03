@@ -44,7 +44,7 @@ public class TaskController {
         Task task = TaskMapper.fromDTO(taskDTO);
         task.setId(id);
         taskService.updateTask(task);
-        return ResponseEntity.noContent().build();
+        return ResponseEntity.ok().build();
     }
 
     @PatchMapping("/{id}/complete")
