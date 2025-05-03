@@ -22,5 +22,4 @@ public class TestContainerConfig {
         registry.add("spring.datasource.password", postgreSQLContainer::getPassword);
         registry.add("spring.datasource.driver-class-name", postgreSQLContainer::getDriverClassName);
     }
-
 }

@@ -1,7 +1,7 @@
-package com.example.todoapp.user;
+package com.example.todoapp.user.service;
 
+import com.example.todoapp.user.User;
 import com.example.todoapp.user.repository.UserRepository;
-import com.example.todoapp.user.service.UserService;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;

@@ -1,6 +1,6 @@
-package com.example.todoapp.user;
+package com.example.todoapp.user.repository;
 
-import com.example.todoapp.user.repository.UserRepository;
+import com.example.todoapp.user.User;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;

@@ -8,7 +8,7 @@ public class TaskDTO {
     private Long id;
     private String name;
 
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "HH:mm:ss")
+    @JsonFormat(pattern = "yyyy-MM-dd")
     private LocalDate deadline;
     private int priority;
     private boolean complete;

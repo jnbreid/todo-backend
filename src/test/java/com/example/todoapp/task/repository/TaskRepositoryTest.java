@@ -1,6 +1,6 @@
-package com.example.todoapp.task;
+package com.example.todoapp.task.repository;
 
-import com.example.todoapp.task.repository.TaskRepository;
+import com.example.todoapp.task.Task;
 import com.example.todoapp.user.User;
 import com.example.todoapp.user.repository.UserRepository;
 import org.junit.jupiter.api.Test;

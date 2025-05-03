@@ -1,14 +1,13 @@
-package com.example.todoapp.task;
+package com.example.todoapp.task.controller;
 
-import com.example.todoapp.task.controller.TaskDTO;
-import com.example.todoapp.task.controller.TaskMapper;
+import com.example.todoapp.task.Task;
 import org.junit.jupiter.api.Test;
 
 import java.time.LocalDate;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-public class TestMapperTest {
+public class TaskMapperTest {
 
     @Test
     void fromDTOTest() {

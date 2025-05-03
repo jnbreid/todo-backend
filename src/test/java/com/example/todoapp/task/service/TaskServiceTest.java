@@ -1,8 +1,7 @@
-package com.example.todoapp.task;
+package com.example.todoapp.task.service;
 
+import com.example.todoapp.task.Task;
 import com.example.todoapp.task.repository.TaskRepository;
-import com.example.todoapp.task.service.TaskService;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;

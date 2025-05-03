@@ -1,6 +1,6 @@
-package com.example.todoapp.user;
+package com.example.todoapp.user.controller;
 
-import com.example.todoapp.user.controller.UserDTO;
+import com.example.todoapp.user.User;
 import com.example.todoapp.user.service.UserMapper;
 import org.junit.jupiter.api.Test;
 
