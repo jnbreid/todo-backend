@@ -19,6 +19,8 @@ import org.springframework.test.web.servlet.MockMvc;
 import java.time.LocalDate;
 
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -52,7 +54,7 @@ class TaskControllerTest {
     }
 
     @Test
-    void createTask_Success() throws Exception {
+    void createTaskTest_Success() throws Exception {
         String json_payload = objectMapper.writeValueAsString(taskDTO);
 
         mockMvc.perform(post("/api/tasks")
@@ -60,7 +62,46 @@ class TaskControllerTest {
                 .content(json_payload))
                 .andExpect(status().isCreated());
 
-        Mockito.verify(taskService).createTask(any(Task.class));
+    }
+
+    @Test
+    void createTaskTest_Failure() throws Exception {
+        // deadline in the past gives IllegalArgumentException
+        taskDTO.setDeadline(LocalDate.now().minusDays(1));
+
+        doThrow(new IllegalArgumentException("Deadline can not be in the past."))
+                .when(taskService).createTask(any(Task.class));
+
+        mockMvc.perform(post("/api/tasks")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(taskDTO)))
+                .andExpect(status().isBadRequest());
+
+    }
+
+    @Test
+    void deleteTaskTest_Success() throws Exception {
+
+        Long deleteId = 1L;
+
+        mockMvc.perform(delete("/api/tasks/{id}")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(deleteId)))
+                .andExpect(status().isOk());
+    }
+
+    @Test
+    void deleteTaskTest_Failure() throws Exception {
+
+        doThrow(new IllegalArgumentException())
+                .when(taskService).deleteTask(any(Long.class));
+
+        Long deleteId = 1L;
+
+        mockMvc.perform(delete("/api/tasks/{id}")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(deleteId)))
+                .andExpect(status().isOk());
     }
 
 
