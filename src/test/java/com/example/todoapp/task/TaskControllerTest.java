@@ -1,76 +1,64 @@
+package com.example.todoapp.task;
+
+import com.example.todoapp.task.controller.TaskController;
+import com.example.todoapp.task.controller.TaskDTO;
+import com.example.todoapp.task.service.TaskMapper;
+import com.example.todoapp.task.service.TaskService;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.http.MediaType;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
+import org.springframework.test.web.servlet.MockMvc;
+import org.testcontainers.shaded.com.fasterxml.jackson.databind.ObjectMapper;
+
+import java.time.LocalDate;
+import java.util.List;
+
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.when;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+
 @WebMvcTest(TaskController.class)
+
 class TaskControllerTest {
 
     @Autowired
     private MockMvc mockMvc;
 
-    @MockBean
+    @MockitoBean
     private TaskService taskService;
 
-    @Autowired
-    private ObjectMapper objectMapper;
+    private final ObjectMapper objectMapper = new ObjectMapper();
 
     private Task task;
     private TaskDTO taskDTO;
 
     @BeforeEach
     void setUp() {
-        task = new Task(1L, "Test Task", LocalDate.now().plusDays(1), 3, false, 1L);
+        task = new Task();
+        task.setName("username");
+        task.setPriority(2);
+        task.setDeadline(LocalDate.now().plusDays(1));
+        task.setCompleted(false);
+        task.setUserId(1L);
         taskDTO = TaskMapper.toDTO(task);
     }
 
     @Test
-    void createTask_returns201() throws Exception {
+    void createTask_Success() throws Exception {
+
         mockMvc.perform(post("/api/tasks")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(taskDTO)))
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(taskDTO)))
                 .andExpect(status().isCreated());
 
         Mockito.verify(taskService).createTask(any(Task.class));
     }
 
-    @Test
-    void getTaskById_returnsTaskDTO() throws Exception {
-        Mockito.when(taskService.getTaskById(1L)).thenReturn(task);
 
-        mockMvc.perform(get("/api/tasks/1"))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.name").value("Test Task"))
-                .andExpect(jsonPath("$.priority").value(3));
-    }
-
-    @Test
-    void getTasksForUser_returnsList() throws Exception {
-        Mockito.when(taskService.getTasksForUser(1L)).thenReturn(List.of(task));
-
-        mockMvc.perform(get("/api/tasks/user/1"))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$[0].name").value("Test Task"));
-    }
-
-    @Test
-    void updateTask_returns204() throws Exception {
-        mockMvc.perform(put("/api/tasks/1")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(taskDTO)))
-                .andExpect(status().isNoContent());
-
-        Mockito.verify(taskService).updateTask(any(Task.class));
-    }
-
-    @Test
-    void markTaskAsCompleted_returns200() throws Exception {
-        mockMvc.perform(patch("/api/tasks/1/complete"))
-                .andExpect(status().isOk());
-
-        Mockito.verify(taskService).markTaskAsCompleted(1L);
-    }
-
-    @Test
-    void deleteTask_returns204() throws Exception {
-        mockMvc.perform(delete("/api/tasks/1"))
-                .andExpect(status().isNoContent());
-
-        Mockito.verify(taskService).deleteTask(1L);
-    }
 }

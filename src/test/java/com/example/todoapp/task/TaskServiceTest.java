@@ -1,13 +1,28 @@
+package com.example.todoapp.task;
+
+import com.example.todoapp.task.repository.TaskRepository;
+import com.example.todoapp.task.service.TaskService;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
+
+import java.time.LocalDate;
+import java.util.Optional;
+
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.*;
+
+@ExtendWith(MockitoExtension.class)
 class TaskServiceTest {
 
+    @Mock
     private TaskRepository taskRepository;
-    private TaskService taskService;
 
-    @BeforeEach
-    void setUp() {
-        taskRepository = mock(TaskRepository.class);
-        taskService = new TaskService(taskRepository);
-    }
+    @InjectMocks
+    private TaskService taskService;
 
     @Test
     void createTask_success() {
@@ -46,7 +61,7 @@ class TaskServiceTest {
 
         taskService.markTaskAsCompleted(1L);
 
-        assertTrue(task.isCompleted());
+        assertTrue(task.getCompleted());
         verify(taskRepository).update(task, 1L);
     }
 

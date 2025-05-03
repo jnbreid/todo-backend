@@ -33,7 +33,7 @@ public class UserControllerTest {
     @MockitoBean
     private UserService userService;
 
-    private ObjectMapper objectMapper = new ObjectMapper();
+    private final ObjectMapper objectMapper = new ObjectMapper();
 
     @Test
     void registerUserTest() throws Exception{
