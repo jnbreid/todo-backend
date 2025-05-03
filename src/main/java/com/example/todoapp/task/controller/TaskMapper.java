@@ -1,7 +1,6 @@
-package com.example.todoapp.task.service;
+package com.example.todoapp.task.controller;
 
 import com.example.todoapp.task.Task;
-import com.example.todoapp.task.controller.TaskDTO;
 
 public class TaskMapper {
 
@@ -23,6 +22,7 @@ public class TaskMapper {
         taskDTO.setDeadline(task.getDeadline());
         taskDTO.setPriority(task.getPriority());
         taskDTO.setComplete(task.getCompleted());
+        taskDTO.setUserId(task.getUserId());
         return taskDTO;
     }
 }

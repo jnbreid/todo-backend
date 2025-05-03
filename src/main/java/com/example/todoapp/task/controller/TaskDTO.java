@@ -1,10 +1,14 @@
 package com.example.todoapp.task.controller;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
+
 import java.time.LocalDate;
 
 public class TaskDTO {
     private Long id;
     private String name;
+
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "HH:mm:ss")
     private LocalDate deadline;
     private int priority;
     private boolean complete;

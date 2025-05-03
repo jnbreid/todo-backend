@@ -1,7 +1,6 @@
 package com.example.todoapp.task.controller;
 
 import com.example.todoapp.task.Task;
-import com.example.todoapp.task.service.TaskMapper;
 import com.example.todoapp.task.service.TaskService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
