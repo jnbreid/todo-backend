@@ -1,4 +1,4 @@
-package com.example.todoapp.task;
+package com.example.todoapp.task.controller;
 
 import java.time.LocalDate;
 

@@ -1,5 +1,6 @@
-package com.example.todoapp.task;
+package com.example.todoapp.task.repository;
 
+import com.example.todoapp.task.Task;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.simple.JdbcClient;
 import org.springframework.stereotype.Repository;

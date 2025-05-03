@@ -1,6 +1,6 @@
-package com.example.todoapp.user;
+package com.example.todoapp.user.repository;
 
-import org.springframework.jdbc.core.ResultSetExtractor;
+import com.example.todoapp.user.User;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.simple.JdbcClient;
 import org.springframework.stereotype.Repository;

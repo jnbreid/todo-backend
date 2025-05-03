@@ -1,5 +1,8 @@
-package com.example.todoapp.user;
+package com.example.todoapp.user.controller;
 
+import com.example.todoapp.user.User;
+import com.example.todoapp.user.service.UserMapper;
+import com.example.todoapp.user.service.UserService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -27,8 +30,7 @@ public class UserController {
     @PostMapping("/login")
     public ResponseEntity<UserDTO> login(@RequestBody UserDTO userDTO) {
         User authenticated = userService.authenticate(userDTO.getUsername(), userDTO.getPassword());
-        UserDTO response = UserMapper.toDTO(authenticated);
-        return ResponseEntity.ok(response);
+        return ResponseEntity.ok().build();
     }
 
 }

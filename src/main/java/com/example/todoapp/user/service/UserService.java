@@ -1,5 +1,7 @@
-package com.example.todoapp.user;
+package com.example.todoapp.user.service;
 
+import com.example.todoapp.user.User;
+import com.example.todoapp.user.repository.UserRepository;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;

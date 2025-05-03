@@ -1,5 +1,7 @@
-package com.example.todoapp.task;
+package com.example.todoapp.task.service;
 
+import com.example.todoapp.task.Task;
+import com.example.todoapp.task.repository.TaskRepository;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;

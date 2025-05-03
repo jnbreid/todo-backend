@@ -1,5 +1,7 @@
 package com.example.todoapp.user;
 
+import com.example.todoapp.user.controller.UserDTO;
+import com.example.todoapp.user.service.UserMapper;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;

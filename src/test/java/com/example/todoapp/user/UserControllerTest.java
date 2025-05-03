@@ -2,6 +2,9 @@ package com.example.todoapp.user;
 
 
 import com.example.todoapp.config.SecurityConfig;
+import com.example.todoapp.user.controller.UserController;
+import com.example.todoapp.user.controller.UserDTO;
+import com.example.todoapp.user.service.UserService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -63,8 +66,7 @@ public class UserControllerTest {
         mockMvc.perform(post("/api/users/login")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(userDTO)))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.username").value("testuser"));
+                .andExpect(status().isOk());
     }
 
     @Test
@@ -107,7 +109,7 @@ public class UserControllerTest {
         userDTO.setUsername("username");
         userDTO.setPassword("password");
 
-        doThrow(new Exception())
+        doThrow(new RuntimeException())
                 .when(userService).registerUser(any(User.class));
 
         mockMvc.perform(post("/api/users/register")

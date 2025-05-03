@@ -1,7 +1,8 @@
 package com.example.todoapp.task;
 
+import com.example.todoapp.task.repository.TaskRepository;
 import com.example.todoapp.user.User;
-import com.example.todoapp.user.UserRepository;
+import com.example.todoapp.user.repository.UserRepository;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -28,7 +29,7 @@ public class TaskRepositoryTest {
             .withDatabaseName("testdb")
             .withUsername("testuser")
             .withPassword("secret")
-            .withInitScript("schema.sql");
+            .withInitScript("sql/schema.sql");
 
     @DynamicPropertySource
     static void overrideProps(DynamicPropertyRegistry registry) {

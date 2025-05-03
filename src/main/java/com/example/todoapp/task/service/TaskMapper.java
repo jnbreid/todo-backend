@@ -1,4 +1,7 @@
-package com.example.todoapp.task;
+package com.example.todoapp.task.service;
+
+import com.example.todoapp.task.Task;
+import com.example.todoapp.task.controller.TaskDTO;
 
 public class TaskMapper {
 
