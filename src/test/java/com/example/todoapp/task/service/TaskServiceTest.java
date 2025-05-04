@@ -13,6 +13,7 @@ import java.time.LocalDate;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
@@ -32,6 +33,7 @@ class TaskServiceTest {
     void setUp() {
         task = new Task();
         task.setId(1L);
+        task.setPublicId(UUID.randomUUID());
         task.setName("name");
         task.setPriority(3);
         task.setDeadline(LocalDate.now().plusDays(1));
@@ -43,7 +45,6 @@ class TaskServiceTest {
     void createTask_success() {
 
         assertDoesNotThrow(() -> taskService.createTask(task));
-
         verify(taskRepository).create(task);
     }
 
@@ -96,6 +97,7 @@ class TaskServiceTest {
     void getTasksForUserTest_Success() {
         Task task2 = new Task();
         task2.setName("name2");
+        task2.setPublicId(UUID.randomUUID());
         task2.setPriority(4);
         task2.setDeadline(LocalDate.now().plusDays(2));
         task2.setUserId(1L);
@@ -129,35 +131,36 @@ class TaskServiceTest {
     }
 
     @Test
-    void getTAskByIkTest_Success() {
-        Long taskId = task.getId();
+    void getTaskByIdTest_Success() {
+        UUID taskId = task.getPublicId();
 
-        when(taskRepository.findById(taskId)).thenReturn(Optional.of(task));
 
-        Task result = taskService.getTaskById(taskId);
+        when(taskRepository.findByPublicId(taskId)).thenReturn(Optional.of(task));
+
+        Task result = taskService.getTaskByPublicId(taskId);
 
         assertNotNull(result);
         assertEquals(task.getId(), result.getId());
-        verify(taskRepository).findById(taskId);
+        verify(taskRepository).findByPublicId(taskId);
     }
 
     @Test
-    void getTAskByIkTest_NotExistingTask() {
-        Long taskId = 1L;
+    void getTaskByIdTest_NotExistingTask() {
+        UUID taskId = task.getPublicId();
 
-        when(taskRepository.findById(taskId)).thenReturn(Optional.empty());
+        when(taskRepository.findByPublicId(taskId)).thenReturn(Optional.empty());
 
         assertThrows(IllegalArgumentException.class, () ->
-                taskService.getTaskById(taskId));
+                taskService.getTaskByPublicId(taskId));
 
-        verify(taskRepository).findById(taskId);
+        verify(taskRepository).findByPublicId(taskId);
     }
 
     @Test
     void updateTaskTest() {
-        Long taskId = task.getId();
+        UUID taskId = task.getPublicId();
 
-        when(taskRepository.findById(taskId)).thenReturn(Optional.of(task));
+        when(taskRepository.findByPublicId(taskId)).thenReturn(Optional.of(task));
 
         taskService.updateTask(task);
 
@@ -166,9 +169,9 @@ class TaskServiceTest {
 
     @Test
     void deleteTaskTest_Success() {
-        Long taskId = task.getId();
+        UUID taskId = task.getPublicId();
 
-        when(taskRepository.findById(taskId)).thenReturn(Optional.of(task));
+        when(taskRepository.findByPublicId(taskId)).thenReturn(Optional.of(task));
 
         taskService.deleteTask(taskId);
 
@@ -177,14 +180,14 @@ class TaskServiceTest {
 
     @Test
     void deleteTaskTest_NotExistingTask() {
-        Long taskId = 1L;
+        UUID taskId = task.getPublicId();
 
-        when(taskRepository.findById(taskId)).thenReturn(Optional.empty());
+        when(taskRepository.findByPublicId(taskId)).thenReturn(Optional.empty());
 
         assertThrows(IllegalArgumentException.class, () ->
                 taskService.deleteTask(taskId));
 
-        verify(taskRepository, never()).delete(anyLong());
+        verify(taskRepository, never()).delete(any(UUID.class));
     }
 
 

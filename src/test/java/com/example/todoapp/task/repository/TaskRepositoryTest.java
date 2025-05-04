@@ -16,6 +16,7 @@ import org.testcontainers.junit.jupiter.Testcontainers;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -53,7 +54,7 @@ public class TaskRepositoryTest {
         long userId = newOptional.get().getId();
 
         LocalDate localDate = LocalDate.of(2020, 6, 7);
-        Task task = new Task(null, "task", localDate, 5, true, userId);
+        Task task = new Task(null, UUID.randomUUID(), "task", localDate, 5, true, userId);
         int inserted = taskRepository.create(task);
         assertEquals(1, inserted);
     }
@@ -73,9 +74,9 @@ public class TaskRepositoryTest {
         long userId2 = newOptional2.get().getId();
 
         LocalDate localDate = LocalDate.of(2020, 6, 7);
-        Task task1 = new Task(null, "task1", localDate, 5, true, userId1);
-        Task task2 = new Task(null, "task2", localDate, 5, true, userId1);
-        Task task3 = new Task(null, "task3", localDate, 5, true, userId2);
+        Task task1 = new Task(null, UUID.randomUUID(),"task1", localDate, 5, true, userId1);
+        Task task2 = new Task(null, UUID.randomUUID(), "task2", localDate, 5, true, userId1);
+        Task task3 = new Task(null, UUID.randomUUID(), "task3", localDate, 5, true, userId2);
         taskRepository.create(task1);
         taskRepository.create(task2);
         taskRepository.create(task3);
@@ -99,7 +100,7 @@ public class TaskRepositoryTest {
     }
 
     @Test
-    void findByIdTest() {
+    void findByPublicIdTest() {
         User user = new User(null, "username", "pswd");
         userRepository.create(user);
         Optional<User> newOptionalUser = userRepository.findByUsername(user.getUsername());
@@ -107,14 +108,14 @@ public class TaskRepositoryTest {
         long userId = newOptionalUser.get().getId();
 
         LocalDate localDate = LocalDate.of(2020, 6, 7);
-        Task task = new Task(null, "task", localDate, 5, true, userId);
+        Task task = new Task(null, UUID.randomUUID(), "task", localDate, 5, true, userId);
         taskRepository.create(task);
 
         // load set to get id
         List<Task> p1Tasks = taskRepository.findSet(task.getUserId());
         assertFalse(p1Tasks.isEmpty());
         // use id to test findById
-        Optional<Task> newOptional = taskRepository.findById(p1Tasks.getFirst().getId());
+        Optional<Task> newOptional = taskRepository.findByPublicId(p1Tasks.getFirst().getPublicId());
 
         // test if item can be found if exists
         assertFalse(newOptional.isEmpty());
@@ -144,7 +145,7 @@ public class TaskRepositoryTest {
         long userId = newOptional.get().getId();
 
         LocalDate localDate = LocalDate.of(2020, 6, 7);
-        Task task = new Task(null, "task", localDate, 5, true, userId);
+        Task task = new Task(null, UUID.randomUUID(), "task", localDate, 5, true, userId);
 
         taskRepository.create(task);
 
@@ -154,16 +155,16 @@ public class TaskRepositoryTest {
         assertFalse(newOptionalUpdate.isEmpty());
         long userIdUpdate = newOptionalUpdate.get().getId();
         LocalDate localDateUpdate = LocalDate.of(2021, 7, 8);
-        Task taskUpdate = new Task(43L, "taskUpdate", localDateUpdate, 1, false, userIdUpdate);
+        Task taskUpdate = new Task(43L, UUID.randomUUID(),  "taskUpdate", localDateUpdate, 1, false, userIdUpdate);
         // get task id to update specified row
         List<Task> p1Tasks = taskRepository.findSet(task.getUserId());
         assertFalse(p1Tasks.isEmpty());
-        int updateCount = taskRepository.update(taskUpdate, p1Tasks.getFirst().getId());
-        // only one row sould be updated
+        int updateCount = taskRepository.update(taskUpdate, p1Tasks.getFirst().getPublicId());
+        // only one row should be updated
         assertEquals(1, updateCount);
 
         // get the updated item
-        Optional<Task> newOptionalTask = taskRepository.findById(p1Tasks.getFirst().getId());
+        Optional<Task> newOptionalTask = taskRepository.findByPublicId(p1Tasks.getFirst().getPublicId());
         // test if item can be found if exists
         assertFalse(newOptionalTask.isEmpty());
 
@@ -171,6 +172,7 @@ public class TaskRepositoryTest {
         // test if new values are transferred correctly
         assertNotNull(newTask.getId());
         assertEquals(p1Tasks.getFirst().getId(), newTask.getId());
+        assertEquals(p1Tasks.getFirst().getPublicId(), newTask.getPublicId());
         assertEquals(taskUpdate.getName(), newTask.getName());
         assertEquals(taskUpdate.getPriority(), newTask.getPriority());
         assertEquals(taskUpdate.getCompleted(), newTask.getCompleted());
@@ -191,14 +193,14 @@ public class TaskRepositoryTest {
         // test delete() function
         // create a task
         LocalDate localDate = LocalDate.of(2020, 6, 7);
-        Task task = new Task(null, "task", localDate, 5, true, userId);
+        Task task = new Task(null, UUID.randomUUID(), "task", localDate, 5, true, userId);
         taskRepository.create(task);
         // get all tasks for the created user to get task id
         List<Task> p1Tasks = taskRepository.findSet(task.getUserId());
         assertFalse(p1Tasks.isEmpty());
         Task newTask = p1Tasks.getFirst();
 
-        int delCount = taskRepository.delete(newTask.getId());
+        int delCount = taskRepository.delete(newTask.getPublicId());
         assertEquals(1, delCount);
 
         Optional<Task> delTask = taskRepository.findById(p1Tasks.getFirst().getId());

@@ -178,6 +178,4 @@ class TaskControllerTest {
         mockMvc.perform(delete("/api/tasks/public/{id}", publicDeleteId))
                 .andExpect(status().isBadRequest());
     }
-
-
 }

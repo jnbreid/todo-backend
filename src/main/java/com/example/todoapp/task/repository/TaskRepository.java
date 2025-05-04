@@ -27,18 +27,18 @@ public class TaskRepository {
     }
 
     public List<Task> findSet(long userId) {
-        String sql = "SELECT id, public_id, name, deadline, priority, completed, user_id FROM tasks WHERE user_id = ?";
+        String sql = "SELECT * FROM tasks WHERE user_id = ?";
         return client.sql(sql).params(userId).query(rowMapper).list();
     }
 
     public Optional<Task> findById(long taskId) {
-        String sql = "SELECT id, public_id,  name, deadline, priority, completed, user_id FROM tasks WHERE id = ?";
+        String sql = "SELECT * FROM tasks WHERE id = ?";
         return client.sql(sql).params(taskId).query(rowMapper).optional();
     }
 
     public Optional<Task> findByPublicId(UUID publicId) {
-        String sql = "SELECT id, public_id,  name, deadline, priority, completed, user_id FROM tasks WHERE public_id = ?";
-        return client.sql(sql).params(publicId.toString()).query(rowMapper).optional();
+        String sql = "SELECT * FROM tasks WHERE public_id = ?";
+        return client.sql(sql).params(publicId).query(rowMapper).optional();
     }
 
     public int update(Task task, long taskId) {
@@ -61,7 +61,7 @@ public class TaskRepository {
                 task.getPriority(),
                 task.getCompleted(),
                 task.getUserId(),
-                publicTaskId.toString()
+                publicTaskId
         ).update();
     }
 
@@ -72,7 +72,7 @@ public class TaskRepository {
 
     public int delete(UUID publicTaskId) {
         String sql = "DELETE FROM tasks WHERE public_id = ?";
-        return client.sql(sql).params(publicTaskId.toString()).update();
+        return client.sql(sql).params(publicTaskId).update();
     }
 
 }
