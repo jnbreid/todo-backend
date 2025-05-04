@@ -22,10 +22,6 @@ public class TaskDTO {
         this.id = id;
     }
 
-    public boolean isComplete() {
-        return complete;
-    }
-
     public String getName() {
         return name;
     }
