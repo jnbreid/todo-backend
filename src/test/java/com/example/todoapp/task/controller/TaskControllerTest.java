@@ -91,7 +91,7 @@ class TaskControllerTest {
         mockMvc.perform(get("/api/tasks/public/{public_id}", publicTaskId.toString()))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-                .andExpect(jsonPath("$.public_id").value(taskDTO.getPublicId().toString()))
+                .andExpect(jsonPath("$.publicId").value(taskDTO.getPublicId().toString()))
                 .andExpect(jsonPath("$.name").value(taskDTO.getName()))
                 .andExpect(jsonPath("$.priority").value(taskDTO.getPriority()))
                 .andExpect(jsonPath("$.complete").value(taskDTO.getComplete()))
@@ -143,9 +143,7 @@ class TaskControllerTest {
 
     @Test
     void updateTask() throws Exception {
-        UUID publicTaskId = task.getPublicId();
-
-        mockMvc.perform(put("/api/tasks/public/{public_id}", publicTaskId)
+        mockMvc.perform(put("/api/tasks/update")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(taskDTO)))
                 .andExpect(status().isOk());
@@ -177,7 +175,7 @@ class TaskControllerTest {
 
         UUID publicDeleteId = UUID.randomUUID();
 
-        mockMvc.perform(delete("/api/tasks/{id}", publicDeleteId))
+        mockMvc.perform(delete("/api/tasks/public/{id}", publicDeleteId))
                 .andExpect(status().isBadRequest());
     }
 

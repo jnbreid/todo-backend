@@ -27,8 +27,8 @@ public class TaskController {
     }
 
     @GetMapping("/public/{public_id}")
-    public ResponseEntity<TaskDTO> getTaskById(@PathVariable UUID publicTaskId) {
-        Task task = taskService.getTaskByPublicId(publicTaskId);
+    public ResponseEntity<TaskDTO> getTaskById(@PathVariable UUID public_id) {
+        Task task = taskService.getTaskByPublicId(public_id);
         TaskDTO dto = TaskMapper.toDTO(task);
         return ResponseEntity.ok(dto);
     }
@@ -40,22 +40,22 @@ public class TaskController {
         return ResponseEntity.ok(taskDTOs);
     }
 
-    @PutMapping("/public/{public_id}")
-    public ResponseEntity<Void> updateTask(@PathVariable UUID publicTaskId, @RequestBody TaskDTO taskDTO) {
+    @PutMapping("/update")
+    public ResponseEntity<Void> updateTask(@RequestBody TaskDTO taskDTO) {
         Task task = TaskMapper.fromDTO(taskDTO);
         taskService.updateTask(task);
         return ResponseEntity.ok().build();
     }
 
     @PatchMapping("/public/{public_id}/complete")
-    public ResponseEntity<Void> markTaskAsCompleted(@PathVariable UUID publicTaskId) {
-        taskService.markTaskAsCompleted(publicTaskId);
+    public ResponseEntity<Void> markTaskAsCompleted(@PathVariable UUID public_id) {
+        taskService.markTaskAsCompleted(public_id);
         return ResponseEntity.ok().build();
     }
 
     @DeleteMapping("/public/{public_id}")
-    public ResponseEntity<Void> deleteTask(@PathVariable UUID publicTaskId) {
-        taskService.deleteTask(publicTaskId);
+    public ResponseEntity<Void> deleteTask(@PathVariable UUID public_id) {
+        taskService.deleteTask(public_id);
         return ResponseEntity.ok().build();
     }
 }
