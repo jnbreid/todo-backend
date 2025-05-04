@@ -5,6 +5,7 @@ import org.springframework.jdbc.core.RowMapper;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.UUID;
 
 public class TaskRowMapper implements RowMapper<Task> {
     @Override
@@ -16,6 +17,8 @@ public class TaskRowMapper implements RowMapper<Task> {
         task.setPriority(rs.getInt("priority"));
         task.setCompleted(rs.getBoolean("completed"));
         task.setUserId(rs.getLong("user_id"));
+
+        task.setPublicId(UUID.fromString(rs.getString("public_id")));
         return task;
     }
 }

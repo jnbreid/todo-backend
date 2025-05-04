@@ -18,6 +18,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doThrow;
@@ -46,6 +47,7 @@ class TaskControllerTest {
     void setUp() {
         task = new Task();
         task.setId(1L);
+        task.setPublicId(UUID.randomUUID());
         task.setName("name");
         task.setPriority(2);
         task.setDeadline(LocalDate.now().plusDays(1));
@@ -82,14 +84,14 @@ class TaskControllerTest {
 
     @Test
     void getTaskByIdTest_Success() throws Exception {
-        Long taskId = task.getId();
+        UUID publicTaskId = task.getPublicId();
 
-        when(taskService.getTaskById(taskId)).thenReturn(task);
+        when(taskService.getTaskByPublicId(publicTaskId)).thenReturn(task);
 
-        mockMvc.perform(get("/api/tasks/{id}", taskId))
+        mockMvc.perform(get("/api/tasks/public/{public_id}", publicTaskId.toString()))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-                .andExpect(jsonPath("$.id").value(taskDTO.getId()))
+                .andExpect(jsonPath("$.public_id").value(taskDTO.getPublicId().toString()))
                 .andExpect(jsonPath("$.name").value(taskDTO.getName()))
                 .andExpect(jsonPath("$.priority").value(taskDTO.getPriority()))
                 .andExpect(jsonPath("$.complete").value(taskDTO.getComplete()))
@@ -101,6 +103,7 @@ class TaskControllerTest {
     void getTasksForUser_Success() throws Exception {
         Task task2 = new Task();
         task2.setId(2L);
+        task2.setPublicId(UUID.randomUUID());
         task2.setName("name2");
         task2.setPriority(3);
         task2.setDeadline(LocalDate.now().plusDays(2));
@@ -140,9 +143,9 @@ class TaskControllerTest {
 
     @Test
     void updateTask() throws Exception {
-        Long taskId = task.getId();
+        UUID publicTaskId = task.getPublicId();
 
-        mockMvc.perform(put("/api/tasks/{id}", taskId)
+        mockMvc.perform(put("/api/tasks/public/{public_id}", publicTaskId)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(taskDTO)))
                 .andExpect(status().isOk());
@@ -150,9 +153,9 @@ class TaskControllerTest {
 
     @Test
     void maskTaskAsCompleted() throws Exception {
-        Long updateId = 1L;
+        UUID publicUpdateId = UUID.randomUUID();
 
-        mockMvc.perform(patch("/api/tasks/{id}/complete", updateId))
+        mockMvc.perform(patch("/api/tasks/public/{public_id}/complete", publicUpdateId.toString()))
                 .andExpect(status().isOk());
 
     }
@@ -160,9 +163,9 @@ class TaskControllerTest {
     @Test
     void deleteTaskTest_Success() throws Exception {
 
-        Long deleteId = 1L;
+        UUID publicDeleteId = UUID.randomUUID();
 
-        mockMvc.perform(delete("/api/tasks/{id}", deleteId))
+        mockMvc.perform(delete("/api/tasks/public/{public_id}", publicDeleteId))
                 .andExpect(status().isOk());
     }
 
@@ -170,11 +173,11 @@ class TaskControllerTest {
     void deleteTaskTest_Failure() throws Exception {
 
         doThrow(new IllegalArgumentException())
-                .when(taskService).deleteTask(any(Long.class));
+                .when(taskService).deleteTask(any(UUID.class));
 
-        Long deleteId = 1L;
+        UUID publicDeleteId = UUID.randomUUID();
 
-        mockMvc.perform(delete("/api/tasks/{id}", deleteId))
+        mockMvc.perform(delete("/api/tasks/{id}", publicDeleteId))
                 .andExpect(status().isBadRequest());
     }
 

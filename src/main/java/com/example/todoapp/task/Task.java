@@ -1,10 +1,20 @@
 package com.example.todoapp.task;
 
+import jakarta.persistence.*;
+
 import java.time.LocalDate;
+import java.util.UUID;
 
+@Entity
 public class Task {
-
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
+    @Column(name = "public_id", updatable = false, nullable = false)
+    private UUID publicId;
+
+
 
     private String name;
     private LocalDate deadline;
@@ -22,6 +32,14 @@ public class Task {
         this.priority = priority;
         this.completed = completed;
         this.userId = userId;
+    }
+
+    public UUID getPublicId() {
+        return publicId;
+    }
+
+    public void setPublicId(UUID publicId) {
+        this.publicId = publicId;
     }
 
     public Long getId() {

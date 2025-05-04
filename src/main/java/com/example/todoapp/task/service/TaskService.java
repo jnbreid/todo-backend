@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 @Service
 public class TaskService {
@@ -27,6 +28,16 @@ public class TaskService {
         }
         else {
             throw new IllegalArgumentException("Task with ID " + taskId + " not found.");
+        }
+    }
+
+    private Task requiresExistingTask(UUID publicTaskId) {
+        Optional<Task> taskOptional = taskRepository.findByPublicId(publicTaskId);
+        if (taskOptional.isPresent()) {
+            return taskOptional.get();
+        }
+        else {
+            throw new IllegalArgumentException("Task with public ID " + publicTaskId.toString() + " not found.");
         }
     }
 
@@ -55,11 +66,15 @@ public class TaskService {
         return requiresExistingTask(taskId);
     }
 
+    public Task getTaskByPublicId(UUID publicTaskId) {
+        return requiresExistingTask(publicTaskId);
+    }
+
     public void updateTask(Task task) {
         validateTask(task);
 
-        requiresExistingTask(task.getId());
-        taskRepository.update(task, task.getId());
+        requiresExistingTask(task.getPublicId());
+        taskRepository.update(task, task.getPublicId());
     }
 
     public void markTaskAsCompleted(Long taskId) {
@@ -69,8 +84,20 @@ public class TaskService {
         taskRepository.update(task, task.getId());
     }
 
+    public void markTaskAsCompleted(UUID publicTaskId) {
+        Task task = requiresExistingTask(publicTaskId);
+
+        task.setCompleted(true);
+        taskRepository.update(task, task.getPublicId());
+    }
+
     public void deleteTask(Long taskId){
         requiresExistingTask(taskId);
         taskRepository.delete(taskId);
+    }
+
+    public void deleteTask(UUID publicTaskId){
+        requiresExistingTask(publicTaskId);
+        taskRepository.delete(publicTaskId);
     }
 }

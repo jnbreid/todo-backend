@@ -3,9 +3,10 @@ package com.example.todoapp.task.controller;
 import com.fasterxml.jackson.annotation.JsonFormat;
 
 import java.time.LocalDate;
+import java.util.UUID;
 
 public class TaskDTO {
-    private Long id;
+    private UUID publicId;
     private String name;
 
     @JsonFormat(pattern = "yyyy-MM-dd")
@@ -14,12 +15,12 @@ public class TaskDTO {
     private boolean complete;
     private Long userId;
 
-    public Long getId() {
-        return id;
+    public UUID getPublicId() {
+        return publicId;
     }
 
-    public void setId(Long id) {
-        this.id = id;
+    public void setPublicId(UUID publicId) {
+        this.publicId = publicId;
     }
 
     public String getName() {

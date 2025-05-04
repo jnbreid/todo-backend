@@ -4,6 +4,7 @@ import com.example.todoapp.task.Task;
 import org.junit.jupiter.api.Test;
 
 import java.time.LocalDate;
+import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -12,7 +13,7 @@ public class TaskMapperTest {
     @Test
     void fromDTOTest() {
         TaskDTO taskDTO = new TaskDTO();
-        taskDTO.setId(1L);
+        taskDTO.setPublicId(UUID.randomUUID());
         taskDTO.setName("name");
         taskDTO.setDeadline(LocalDate.of(2020, 10,10));
         taskDTO.setPriority(2);
@@ -21,7 +22,8 @@ public class TaskMapperTest {
 
         Task task = TaskMapper.fromDTO(taskDTO);
 
-        assertEquals(taskDTO.getId(), task.getId());
+        assertNull(task.getId());
+        assertEquals(taskDTO.getPublicId(), task.getPublicId());
         assertEquals(taskDTO.getName(), task.getName());
         assertTrue(taskDTO.getDeadline().isEqual(task.getDeadline()));
         assertEquals(taskDTO.getPriority(), task.getPriority());
@@ -33,6 +35,7 @@ public class TaskMapperTest {
     void toDTOTest() {
         Task task = new Task();
         task.setId(1L);
+        task.setPublicId(UUID.randomUUID());
         task.setName("name");
         task.setDeadline(LocalDate.of(2020, 10,10));
         task.setPriority(2);
@@ -41,7 +44,7 @@ public class TaskMapperTest {
 
         TaskDTO taskDTO = TaskMapper.toDTO(task);
 
-        assertEquals(task.getId(), taskDTO.getId());
+        assertEquals(task.getPublicId(), taskDTO.getPublicId());
         assertEquals(task.getName(), taskDTO.getName());
         assertTrue(task.getDeadline().isEqual(taskDTO.getDeadline()));
         assertEquals(task.getPriority(), taskDTO.getPriority());

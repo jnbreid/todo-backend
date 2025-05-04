@@ -7,6 +7,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.UUID;
 
 @RestController
 @RequestMapping("/api/tasks")
@@ -25,9 +26,9 @@ public class TaskController {
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
-    @GetMapping("/{id}")
-    public ResponseEntity<TaskDTO> getTaskById(@PathVariable Long id) {
-        Task task = taskService.getTaskById(id);
+    @GetMapping("/public/{public_id}")
+    public ResponseEntity<TaskDTO> getTaskById(@PathVariable UUID publicTaskId) {
+        Task task = taskService.getTaskByPublicId(publicTaskId);
         TaskDTO dto = TaskMapper.toDTO(task);
         return ResponseEntity.ok(dto);
     }
@@ -39,23 +40,22 @@ public class TaskController {
         return ResponseEntity.ok(taskDTOs);
     }
 
-    @PutMapping("/{id}")
-    public ResponseEntity<Void> updateTask(@PathVariable Long id, @RequestBody TaskDTO taskDTO) {
+    @PutMapping("/public/{public_id}")
+    public ResponseEntity<Void> updateTask(@PathVariable UUID publicTaskId, @RequestBody TaskDTO taskDTO) {
         Task task = TaskMapper.fromDTO(taskDTO);
-        task.setId(id);
         taskService.updateTask(task);
         return ResponseEntity.ok().build();
     }
 
-    @PatchMapping("/{id}/complete")
-    public ResponseEntity<Void> markTaskAsCompleted(@PathVariable Long id) {
-        taskService.markTaskAsCompleted(id);
+    @PatchMapping("/public/{public_id}/complete")
+    public ResponseEntity<Void> markTaskAsCompleted(@PathVariable UUID publicTaskId) {
+        taskService.markTaskAsCompleted(publicTaskId);
         return ResponseEntity.ok().build();
     }
 
-    @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteTask(@PathVariable Long id) {
-        taskService.deleteTask(id);
+    @DeleteMapping("/public/{public_id}")
+    public ResponseEntity<Void> deleteTask(@PathVariable UUID publicTaskId) {
+        taskService.deleteTask(publicTaskId);
         return ResponseEntity.ok().build();
     }
 }
