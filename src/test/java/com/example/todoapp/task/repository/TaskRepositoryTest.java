@@ -54,7 +54,7 @@ public class TaskRepositoryTest {
         long userId = newOptional.get().getId();
 
         LocalDate localDate = LocalDate.of(2020, 6, 7);
-        Task task = new Task(null, UUID.randomUUID(), "task", localDate, 5, true, userId);
+        Task task = new Task(null, UUID.randomUUID(), "task", localDate, 5, true, userId, user.getUsername());
         int inserted = taskRepository.create(task);
         assertEquals(1, inserted);
     }
@@ -74,18 +74,18 @@ public class TaskRepositoryTest {
         long userId2 = newOptional2.get().getId();
 
         LocalDate localDate = LocalDate.of(2020, 6, 7);
-        Task task1 = new Task(null, UUID.randomUUID(),"task1", localDate, 5, true, userId1);
-        Task task2 = new Task(null, UUID.randomUUID(), "task2", localDate, 5, true, userId1);
-        Task task3 = new Task(null, UUID.randomUUID(), "task3", localDate, 5, true, userId2);
+        Task task1 = new Task(null, UUID.randomUUID(),"task1", localDate, 5, true, userId1, user1.getUsername());
+        Task task2 = new Task(null, UUID.randomUUID(), "task2", localDate, 5, true, userId1, user1.getUsername());
+        Task task3 = new Task(null, UUID.randomUUID(), "task3", localDate, 5, true, userId2, user2.getUsername());
         taskRepository.create(task1);
         taskRepository.create(task2);
         taskRepository.create(task3);
 
-        List<Task> p1Tasks = taskRepository.findSet(task1.getUserId());
+        List<Task> p1Tasks = taskRepository.findSet(task1.getUserName());
         assertFalse(p1Tasks.isEmpty());
         assertEquals(2, p1Tasks.size());
 
-        List<Task> p2Tasks = taskRepository.findSet(task3.getUserId());
+        List<Task> p2Tasks = taskRepository.findSet(task3.getUserName());
         assertFalse(p2Tasks.isEmpty());
         assertEquals(1, p2Tasks.size());
 
@@ -108,7 +108,7 @@ public class TaskRepositoryTest {
         long userId = newOptionalUser.get().getId();
 
         LocalDate localDate = LocalDate.of(2020, 6, 7);
-        Task task = new Task(null, UUID.randomUUID(), "task", localDate, 5, true, userId);
+        Task task = new Task(null, UUID.randomUUID(), "task", localDate, 5, true, userId, user.getUsername());
         taskRepository.create(task);
 
         // load set to get id
@@ -145,7 +145,7 @@ public class TaskRepositoryTest {
         long userId = newOptional.get().getId();
 
         LocalDate localDate = LocalDate.of(2020, 6, 7);
-        Task task = new Task(null, UUID.randomUUID(), "task", localDate, 5, true, userId);
+        Task task = new Task(null, UUID.randomUUID(), "task", localDate, 5, true, userId, user.getUsername());
 
         taskRepository.create(task);
 
@@ -155,7 +155,7 @@ public class TaskRepositoryTest {
         assertFalse(newOptionalUpdate.isEmpty());
         long userIdUpdate = newOptionalUpdate.get().getId();
         LocalDate localDateUpdate = LocalDate.of(2021, 7, 8);
-        Task taskUpdate = new Task(43L, UUID.randomUUID(),  "taskUpdate", localDateUpdate, 1, false, userIdUpdate);
+        Task taskUpdate = new Task(43L, UUID.randomUUID(),  "taskUpdate", localDateUpdate, 1, false, userIdUpdate, user.getUsername());
         // get task id to update specified row
         List<Task> p1Tasks = taskRepository.findSet(task.getUserId());
         assertFalse(p1Tasks.isEmpty());
@@ -193,7 +193,7 @@ public class TaskRepositoryTest {
         // test delete() function
         // create a task
         LocalDate localDate = LocalDate.of(2020, 6, 7);
-        Task task = new Task(null, UUID.randomUUID(), "task", localDate, 5, true, userId);
+        Task task = new Task(null, UUID.randomUUID(), "task", localDate, 5, true, userId, user.getUsername());
         taskRepository.create(task);
         // get all tasks for the created user to get task id
         List<Task> p1Tasks = taskRepository.findSet(task.getUserId());

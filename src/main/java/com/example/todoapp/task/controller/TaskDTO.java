@@ -13,7 +13,7 @@ public class TaskDTO {
     private LocalDate deadline;
     private int priority;
     private boolean complete;
-    private Long userId;
+    private String userName;
 
     public UUID getPublicId() {
         return publicId;
@@ -55,11 +55,11 @@ public class TaskDTO {
         this.complete = complete;
     }
 
-    public Long getUserId() {
-        return userId;
+    public String getUserName() {
+        return userName;
     }
 
-    public void setUserId(Long userId) {
-        this.userId = userId;
+    public void setUserName(String userName) {
+        this.userName = userName;
     }
 }

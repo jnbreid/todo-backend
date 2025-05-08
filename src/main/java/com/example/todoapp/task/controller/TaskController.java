@@ -33,9 +33,9 @@ public class TaskController {
         return ResponseEntity.ok(dto);
     }
 
-    @GetMapping("/user/{userId}")
-    public ResponseEntity<List<TaskDTO>> getTasksForUser(@PathVariable Long userId) {
-        List<Task> tasks = taskService.getTasksForUser(userId);
+    @GetMapping("/user/{userName}")
+    public ResponseEntity<List<TaskDTO>> getTasksForUser(@PathVariable String userName) {
+        List<Task> tasks = taskService.getTasksForUser(userName);
         List<TaskDTO> taskDTOs = tasks.stream().map(TaskMapper::toDTO).toList();
         return ResponseEntity.ok(taskDTOs);
     }

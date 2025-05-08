@@ -18,7 +18,7 @@ public class TaskMapperTest {
         taskDTO.setDeadline(LocalDate.of(2020, 10,10));
         taskDTO.setPriority(2);
         taskDTO.setComplete(true);
-        taskDTO.setUserId(42L);
+        taskDTO.setUserName("userName");
 
         Task task = TaskMapper.fromDTO(taskDTO);
 
@@ -28,7 +28,7 @@ public class TaskMapperTest {
         assertTrue(taskDTO.getDeadline().isEqual(task.getDeadline()));
         assertEquals(taskDTO.getPriority(), task.getPriority());
         assertEquals(taskDTO.getComplete(), task.getCompleted());
-        assertEquals(taskDTO.getUserId(), task.getUserId());
+        assertEquals(taskDTO.getUserName(), task.getUserName());
     }
 
     @Test
@@ -49,6 +49,5 @@ public class TaskMapperTest {
         assertTrue(task.getDeadline().isEqual(taskDTO.getDeadline()));
         assertEquals(task.getPriority(), taskDTO.getPriority());
         assertEquals(task.getCompleted(), taskDTO.getComplete());
-        assertNull(taskDTO.getUserId());
     }
 }

@@ -11,7 +11,7 @@ public class TaskMapper {
         task.setDeadline(taskDTO.getDeadline());
         task.setPriority(taskDTO.getPriority());
         task.setCompleted(taskDTO.getComplete());
-        task.setUserId(taskDTO.getUserId());
+        task.setUserName(taskDTO.getUserName());
         return task;
     }
 
@@ -22,7 +22,7 @@ public class TaskMapper {
         taskDTO.setDeadline(task.getDeadline());
         taskDTO.setPriority(task.getPriority());
         taskDTO.setComplete(task.getCompleted());
-        taskDTO.setUserId(task.getUserId());
+        taskDTO.setUserName(task.getUserName());
         return taskDTO;
     }
 }

@@ -39,6 +39,7 @@ class TaskServiceTest {
         task.setDeadline(LocalDate.now().plusDays(1));
         task.setUserId(1L);
         task.setCompleted(false);
+        task.setUserName("username");
     }
 
     @Test
@@ -102,32 +103,33 @@ class TaskServiceTest {
         task2.setDeadline(LocalDate.now().plusDays(2));
         task2.setUserId(1L);
         task2.setCompleted(false);
+        task2.setUserName("username2");
 
-        Long userId = task.getUserId();
+        String username = task.getUserName();
 
         List<Task> mockTasks = List.of(task, task2);
 
-        when(taskRepository.findSet(userId)).thenReturn(mockTasks);
+        when(taskRepository.findSet(username)).thenReturn(mockTasks);
 
-        List<Task> results = taskService.getTasksForUser(userId);
+        List<Task> results = taskService.getTasksForUser(username);
 
         assertEquals(2, results.size());
         assertEquals("name", results.getFirst().getName());
         assertEquals(4, task2.getPriority());
-        verify(taskRepository).findSet(userId);
+        verify(taskRepository).findSet(username);
     }
 
     @Test
     void getTasksForUserTest_NoTasksExist() {
-        Long userId = 1L;
+        String username = "username";
 
-        when(taskRepository.findSet(userId)).thenReturn(Collections.emptyList());
+        when(taskRepository.findSet(username)).thenReturn(Collections.emptyList());
 
-        List<Task> results = taskService.getTasksForUser(userId);
+        List<Task> results = taskService.getTasksForUser(username);
 
         assertNotNull(results);
         assertTrue(results.isEmpty());
-        verify(taskRepository).findSet(userId);
+        verify(taskRepository).findSet(username);
     }
 
     @Test

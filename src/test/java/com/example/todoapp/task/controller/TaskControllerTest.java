@@ -53,6 +53,7 @@ class TaskControllerTest {
         task.setDeadline(LocalDate.now().plusDays(1));
         task.setCompleted(false);
         task.setUserId(1L);
+        task.setUserName("username");
         taskDTO = TaskMapper.toDTO(task);
     }
 
@@ -95,7 +96,7 @@ class TaskControllerTest {
                 .andExpect(jsonPath("$.name").value(taskDTO.getName()))
                 .andExpect(jsonPath("$.priority").value(taskDTO.getPriority()))
                 .andExpect(jsonPath("$.complete").value(taskDTO.getComplete()))
-                .andExpect(jsonPath("$.userId").value(taskDTO.getUserId()))
+                .andExpect(jsonPath("$.userName").value(taskDTO.getUserName()))
                 .andExpect(jsonPath("$.deadline").value(taskDTO.getDeadline().toString()));
     }
 
@@ -109,15 +110,16 @@ class TaskControllerTest {
         task2.setDeadline(LocalDate.now().plusDays(2));
         task2.setCompleted(true);
         task2.setUserId(1L);
+        task2.setUserName("username2");
         TaskDTO taskDTO2 = TaskMapper.toDTO(task2);
 
-        Long userId = task.getUserId();
+        String username = task.getUserName();
 
         List<Task> taskList = List.of(task, task2);
 
-        when(taskService.getTasksForUser(userId)).thenReturn(taskList);
+        when(taskService.getTasksForUser(username)).thenReturn(taskList);
 
-        mockMvc.perform(get("/api/tasks/user/{userId}", userId))
+        mockMvc.perform(get("/api/tasks/user/{userId}", username))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
                 .andExpect(jsonPath("$.length()").value(2))
@@ -127,13 +129,13 @@ class TaskControllerTest {
 
     @Test
     void getTasksForUser_Success_EmptyList() throws Exception {
-        Long userId = task.getUserId();
+        String username = task.getUserName();
 
         List<Task> taskList = new ArrayList<>();
 
-        when(taskService.getTasksForUser(userId)).thenReturn(taskList);
+        when(taskService.getTasksForUser(username)).thenReturn(taskList);
 
-        mockMvc.perform(get("/api/tasks/user/{userId}", userId))
+        mockMvc.perform(get("/api/tasks/user/{userId}", username))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
                 .andExpect(jsonPath("$.length()").value(0));

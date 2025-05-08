@@ -21,17 +21,27 @@ public class Task {
     private Integer priority;
     private Boolean completed;
     private Long userId;
+    private String userName;
 
     public Task() {
     }
 
-    public Task(Long id, UUID publicId, String name, LocalDate deadline, Integer priority, Boolean completed, Long userId) {
+    public Task(Long id, UUID publicId, String name, LocalDate deadline, Integer priority, Boolean completed, Long userId, String userName) {
         this.id = id;
         this.name = name;
         this.deadline = deadline;
         this.priority = priority;
         this.completed = completed;
         this.userId = userId;
+        this.userName = userName;
+    }
+
+    public String getUserName() {
+        return userName;
+    }
+
+    public void setUserName(String userName) {
+        this.userName = userName;
     }
 
     public UUID getPublicId() {
