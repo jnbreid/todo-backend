@@ -62,10 +62,6 @@ public class TaskService {
         return taskRepository.findSet(userId);
     }
 
-    public List<Task> getTasksForUser(String userName) {
-        return taskRepository.findSet(userName);
-    }
-
     public Task getTaskById(Long taskId) {
         return requiresExistingTask(taskId);
     }

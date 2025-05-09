@@ -22,18 +22,13 @@ public class TaskRepository {
     RowMapper<Task> rowMapper = new TaskRowMapper();
 
     public int create(Task task) {
-        String sql = "INSERT INTO tasks (name, deadline, priority, completed, user_id, user_name) VALUES (?, ?, ?, ?, ?, ?)";
-        return client.sql(sql).params(task.getName(), task.getDeadline(), task.getPriority(), task.getCompleted(), task.getUserId(), task.getUserName()).update();
+        String sql = "INSERT INTO tasks (name, deadline, priority, completed, user_id) VALUES (?, ?, ?, ?, ?)";
+        return client.sql(sql).params(task.getName(), task.getDeadline(), task.getPriority(), task.getCompleted(), task.getUserId()).update();
     }
 
     public List<Task> findSet(long userId) {
         String sql = "SELECT * FROM tasks WHERE user_id = ?";
         return client.sql(sql).params(userId).query(rowMapper).list();
-    }
-
-    public List<Task> findSet(String userName) {
-        String sql = "SELECT * FROM tasks WHERE  user_name = ?";
-        return client.sql(sql).params(userName).query(rowMapper).list();
     }
 
     public Optional<Task> findById(long taskId) {

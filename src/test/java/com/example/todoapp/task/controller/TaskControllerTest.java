@@ -53,7 +53,6 @@ class TaskControllerTest {
         task.setDeadline(LocalDate.now().plusDays(1));
         task.setCompleted(false);
         task.setUserId(1L);
-        task.setUserName("username");
         taskDTO = TaskMapper.toDTO(task);
     }
 
@@ -110,16 +109,15 @@ class TaskControllerTest {
         task2.setDeadline(LocalDate.now().plusDays(2));
         task2.setCompleted(true);
         task2.setUserId(1L);
-        task2.setUserName("username2");
         TaskDTO taskDTO2 = TaskMapper.toDTO(task2);
 
-        String username = task.getUserName();
+        Long userId = task.getUserId();
 
         List<Task> taskList = List.of(task, task2);
 
-        when(taskService.getTasksForUser(username)).thenReturn(taskList);
+        when(taskService.getTasksForUser(userId)).thenReturn(taskList);
 
-        mockMvc.perform(get("/api/tasks/user/{userId}", username))
+        mockMvc.perform(get("/api/tasks/user/{userId}", userId))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
                 .andExpect(jsonPath("$.length()").value(2))
@@ -129,13 +127,13 @@ class TaskControllerTest {
 
     @Test
     void getTasksForUser_Success_EmptyList() throws Exception {
-        String username = task.getUserName();
+        Long userId = task.getUserId();
 
         List<Task> taskList = new ArrayList<>();
 
-        when(taskService.getTasksForUser(username)).thenReturn(taskList);
+        when(taskService.getTasksForUser(userId)).thenReturn(taskList);
 
-        mockMvc.perform(get("/api/tasks/user/{userId}", username))
+        mockMvc.perform(get("/api/tasks/user/{userId}", userId))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
                 .andExpect(jsonPath("$.length()").value(0));

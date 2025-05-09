@@ -28,7 +28,6 @@ public class TaskMapperTest {
         assertTrue(taskDTO.getDeadline().isEqual(task.getDeadline()));
         assertEquals(taskDTO.getPriority(), task.getPriority());
         assertEquals(taskDTO.getComplete(), task.getCompleted());
-        assertEquals(taskDTO.getUserName(), task.getUserName());
     }
 
     @Test

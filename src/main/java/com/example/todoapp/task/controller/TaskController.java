@@ -2,6 +2,7 @@ package com.example.todoapp.task.controller;
 
 import com.example.todoapp.task.Task;
 import com.example.todoapp.task.service.TaskService;
+import io.swagger.v3.oas.annotations.Operation;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -33,12 +34,12 @@ public class TaskController {
         return ResponseEntity.ok(dto);
     }
 
-    @GetMapping("/user/{userName}")
-    public ResponseEntity<List<TaskDTO>> getTasksForUser(@PathVariable String userName) {
-        List<Task> tasks = taskService.getTasksForUser(userName);
-        List<TaskDTO> taskDTOs = tasks.stream().map(TaskMapper::toDTO).toList();
-        return ResponseEntity.ok(taskDTOs);
-    }
+    //@GetMapping("/user/{userName}")
+    //public ResponseEntity<List<TaskDTO>> getTasksForUser(@PathVariable String userName) {
+    //    List<Task> tasks = taskService.getTasksForUser(userName);
+    //    List<TaskDTO> taskDTOs = tasks.stream().map(TaskMapper::toDTO).toList();
+    //    return ResponseEntity.ok(taskDTOs);
+    //}
 
     @PutMapping("/update")
     public ResponseEntity<Void> updateTask(@RequestBody TaskDTO taskDTO) {

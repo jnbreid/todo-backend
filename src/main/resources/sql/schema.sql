@@ -15,6 +15,5 @@ CREATE TABLE IF NOT EXISTS tasks(
    deadline DATE NOT NULL,
    priority INTEGER CHECK (priority <= 5 AND priority >= 1),
    completed BOOLEAN DEFAULT FALSE,
-   user_id BIGINT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
-   user_name VARCHAR(60) NOT NULL
+   user_id BIGINT NOT NULL REFERENCES users(id) ON DELETE CASCADE
 );
