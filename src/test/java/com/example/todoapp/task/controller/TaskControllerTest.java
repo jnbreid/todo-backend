@@ -39,6 +39,7 @@ class TaskControllerTest {
 
     @Autowired
     private ObjectMapper objectMapper;
+    private TaskMapper taskMapper;
 
     private Task task;
     private TaskDTO taskDTO;
@@ -53,7 +54,7 @@ class TaskControllerTest {
         task.setDeadline(LocalDate.now().plusDays(1));
         task.setCompleted(false);
         task.setUserId(1L);
-        taskDTO = TaskMapper.toDTO(task);
+        taskDTO = taskMapper.toDTO(task);
     }
 
     @Test
@@ -100,7 +101,7 @@ class TaskControllerTest {
     }
 
     @Test
-    void getTasksForUser_Success() throws Exception {
+    void getMyTasks_Success() throws Exception {
         Task task2 = new Task();
         task2.setId(2L);
         task2.setPublicId(UUID.randomUUID());
@@ -109,7 +110,7 @@ class TaskControllerTest {
         task2.setDeadline(LocalDate.now().plusDays(2));
         task2.setCompleted(true);
         task2.setUserId(1L);
-        TaskDTO taskDTO2 = TaskMapper.toDTO(task2);
+        TaskDTO taskDTO2 = taskMapper.toDTO(task2);
 
         Long userId = task.getUserId();
 
@@ -117,7 +118,7 @@ class TaskControllerTest {
 
         when(taskService.getTasksForUser(userId)).thenReturn(taskList);
 
-        mockMvc.perform(get("/api/tasks/user/{userId}", userId))
+        mockMvc.perform(get("/api/tasks/my-tasks"))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
                 .andExpect(jsonPath("$.length()").value(2))

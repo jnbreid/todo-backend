@@ -1,11 +1,16 @@
 package com.example.todoapp.task.controller;
 
 import com.example.todoapp.task.Task;
+import com.example.todoapp.task.service.CustomUserDetailsService;
 import com.example.todoapp.task.service.TaskService;
 import io.swagger.v3.oas.annotations.Operation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -38,8 +43,10 @@ public class TaskController {
         return ResponseEntity.ok(dto);
     }
 
-    @GetMapping("/user/{userName}")
-    public ResponseEntity<List<TaskDTO>> getTasksForUser(@PathVariable String userName) {
+    @GetMapping("/my-tasks")
+    public ResponseEntity<List<TaskDTO>> getMyTasks() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String userName = authentication.getName();
         Long userId = taskMapper.getUserIdFromUserName(userName);
         List<Task> tasks = taskService.getTasksForUser(userId);
         List<TaskDTO> taskDTOs = tasks.stream().map(taskMapper::toDTO).toList();
