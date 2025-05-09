@@ -45,4 +45,20 @@ public class UserService {
         return foundUser.get();
 
     }
+
+    public Long findUserIdByUserName(String userName) {
+        Optional<User> existing = this.userRepository.findByUsername(userName);
+        if (existing.isEmpty()) {
+            throw new IllegalArgumentException("User not found.");
+        }
+        return existing.get().getId();
+    }
+
+    public String findUserNameByUserId(Long userId) {
+        Optional<User> existing = this.userRepository.findById(userId);
+        if (existing.isEmpty()) {
+            throw new IllegalArgumentException("User not found.");
+        }
+        return existing.get().getUsername();
+    }
 }

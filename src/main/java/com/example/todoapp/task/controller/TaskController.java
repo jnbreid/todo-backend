@@ -3,6 +3,7 @@ package com.example.todoapp.task.controller;
 import com.example.todoapp.task.Task;
 import com.example.todoapp.task.service.TaskService;
 import io.swagger.v3.oas.annotations.Operation;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -15,14 +16,17 @@ import java.util.UUID;
 public class TaskController {
 
     private final TaskService taskService;
+    private final TaskMapper taskMapper;
 
-    public TaskController(TaskService taskService) {
+    @Autowired
+    public TaskController(TaskService taskService, TaskMapper taskMapper) {
         this.taskService = taskService;
+        this.taskMapper = taskMapper;
     }
 
     @PostMapping
     public ResponseEntity<Void> createTask(@RequestBody TaskDTO taskDTO) {
-        Task task = TaskMapper.fromDTO(taskDTO);
+        Task task = taskMapper.fromDTO(taskDTO);
         taskService.createTask(task);
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
@@ -30,20 +34,21 @@ public class TaskController {
     @GetMapping("/public/{public_id}")
     public ResponseEntity<TaskDTO> getTaskById(@PathVariable UUID public_id) {
         Task task = taskService.getTaskByPublicId(public_id);
-        TaskDTO dto = TaskMapper.toDTO(task);
+        TaskDTO dto = taskMapper.toDTO(task);
         return ResponseEntity.ok(dto);
     }
 
-    //@GetMapping("/user/{userName}")
-    //public ResponseEntity<List<TaskDTO>> getTasksForUser(@PathVariable String userName) {
-    //    List<Task> tasks = taskService.getTasksForUser(userName);
-    //    List<TaskDTO> taskDTOs = tasks.stream().map(TaskMapper::toDTO).toList();
-    //    return ResponseEntity.ok(taskDTOs);
-    //}
+    @GetMapping("/user/{userName}")
+    public ResponseEntity<List<TaskDTO>> getTasksForUser(@PathVariable String userName) {
+        Long userId = taskMapper.getUserIdFromUserName(userName);
+        List<Task> tasks = taskService.getTasksForUser(userId);
+        List<TaskDTO> taskDTOs = tasks.stream().map(taskMapper::toDTO).toList();
+        return ResponseEntity.ok(taskDTOs);
+    }
 
     @PutMapping("/update")
     public ResponseEntity<Void> updateTask(@RequestBody TaskDTO taskDTO) {
-        Task task = TaskMapper.fromDTO(taskDTO);
+        Task task = taskMapper.fromDTO(taskDTO);
         taskService.updateTask(task);
         return ResponseEntity.ok().build();
     }

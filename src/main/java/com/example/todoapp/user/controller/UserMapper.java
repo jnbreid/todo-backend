@@ -1,7 +1,6 @@
-package com.example.todoapp.user.service;
+package com.example.todoapp.user.controller;
 
 import com.example.todoapp.user.User;
-import com.example.todoapp.user.controller.UserDTO;
 
 public class UserMapper {
 
