@@ -5,6 +5,9 @@ import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.security.Keys;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import java.security.Key;
@@ -57,5 +60,9 @@ public class JwtTokenUtil {
     public boolean validateToken(String token, UserDetails userDetails) {
         final String username = extractUsername(token);
         return (username.equals(userDetails.getUsername()) && !isTokenExpired(token));
+    }
+
+    public Authentication getAuthentication(String token, UserDetails userDetails) {
+        return new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
     }
 }
