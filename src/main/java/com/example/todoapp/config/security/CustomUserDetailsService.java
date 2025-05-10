@@ -1,4 +1,4 @@
-package com.example.todoapp.task.service;
+package com.example.todoapp.config.security;
 
 import com.example.todoapp.user.User;
 import com.example.todoapp.user.repository.UserRepository;

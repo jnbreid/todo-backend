@@ -1,6 +1,5 @@
-package com.example.todoapp.config;
+package com.example.todoapp.config.security;
 
-import com.example.todoapp.task.service.CustomUserDetailsService;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
@@ -49,6 +48,11 @@ public class SecurityConfig {
             "/actuator/"
     };
 
+    private static final String[] OPEN_ENDPOINTS = {
+            "/api/users/register",
+            "/api/users/login"
+    };
+
     @Bean
     public SecurityFilterChain configureNoAuthentication(final HttpSecurity http) throws Exception {
         http.cors(Customizer.withDefaults())
@@ -56,14 +60,12 @@ public class SecurityConfig {
                 .sessionManagement(
                         sessionManagement -> sessionManagement.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(
-                        requests -> requests.requestMatchers(HttpMethod.GET, GET_AUTH_WHITELIST)
-                                .permitAll()
-                                .requestMatchers("/api/**")
-                                .permitAll()
-                                .requestMatchers(HttpMethod.OPTIONS, "/**")
-                                .permitAll()
-                                .anyRequest()
-                                .authenticated());
+                        requests -> requests
+                                .requestMatchers(HttpMethod.GET, GET_AUTH_WHITELIST).permitAll()
+                                .requestMatchers("/api/**").permitAll()
+                                .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
+                                .requestMatchers(OPEN_ENDPOINTS).permitAll()
+                                .anyRequest().authenticated());
         return http.build();
     }
 

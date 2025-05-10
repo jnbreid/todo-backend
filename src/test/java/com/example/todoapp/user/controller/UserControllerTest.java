@@ -1,7 +1,7 @@
 package com.example.todoapp.user.controller;
 
 
-import com.example.todoapp.config.SecurityConfig;
+import com.example.todoapp.config.security.SecurityConfig;
 import com.example.todoapp.user.User;
 import com.example.todoapp.user.service.UserService;
 import org.junit.jupiter.api.Test;

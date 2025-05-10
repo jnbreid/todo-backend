@@ -1,7 +1,7 @@
 package com.example.todoapp.task.controller;
 
 import com.example.todoapp.config.JacksonConfig;
-import com.example.todoapp.config.SecurityConfig;
+import com.example.todoapp.config.security.SecurityConfig;
 import com.example.todoapp.task.Task;
 import com.example.todoapp.task.service.TaskService;
 import com.fasterxml.jackson.databind.ObjectMapper;
