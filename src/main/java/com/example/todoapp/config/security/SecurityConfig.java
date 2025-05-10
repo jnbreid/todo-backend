@@ -12,14 +12,17 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 @Configuration
 public class SecurityConfig {
 
     private final CustomUserDetailsService customUserDetailsService;
+    private final JwtRequestFilter jwtRequestFilter;
 
-    public SecurityConfig(CustomUserDetailsService customUserDetailsService) {
+    public SecurityConfig(CustomUserDetailsService customUserDetailsService, JwtRequestFilter jwtRequestFilter) {
         this.customUserDetailsService = customUserDetailsService;
+        this.jwtRequestFilter = jwtRequestFilter;
     }
 
     @Bean
@@ -59,13 +62,13 @@ public class SecurityConfig {
                 .csrf(AbstractHttpConfigurer::disable)
                 .sessionManagement(
                         sessionManagement -> sessionManagement.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-                .authorizeHttpRequests(
-                        requests -> requests
+                .authorizeHttpRequests(auth -> auth
                                 .requestMatchers(HttpMethod.GET, GET_AUTH_WHITELIST).permitAll()
-                                .requestMatchers("/api/**").permitAll()
                                 .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
                                 .requestMatchers(OPEN_ENDPOINTS).permitAll()
-                                .anyRequest().authenticated());
+                                .anyRequest().authenticated())
+                .addFilterBefore(jwtRequestFilter, UsernamePasswordAuthenticationFilter.class);
+
         return http.build();
     }
 
