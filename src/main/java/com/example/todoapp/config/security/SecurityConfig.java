@@ -44,7 +44,6 @@ public class SecurityConfig {
 
     private static final String[] GET_AUTH_WHITELIST = {
             // SWAGGER
-            "/*",
             "/swagger-ui/**",
             "/v3/**",
             // Actuator
