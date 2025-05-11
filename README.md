@@ -26,7 +26,22 @@ git clone https://github.com/your-username/your-repository-name.git
 cd your-repository-name
 ```
 
+### 2. Build the application
 
-##License
+```bash
+./gradlew build
+```
+
+### 3. Run the application
+
+```bash
+./gradlew bootRun
+```
+The application will run at [http://localhost:8080](http://localhost:8080).
+
+Swagger UI is available for testing and interacting with the APIs: [http://localhost:8080/swagger-ui/](http://localhost:8080/swagger-ui/)
+
+
+## License
 
 This project is licensed under the MIT License - see the [LICENSE file](LICENSE) for details.
