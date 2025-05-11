@@ -7,7 +7,6 @@ import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.security.Keys;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 
@@ -18,7 +17,7 @@ import java.util.function.Function;
 @Component
 public class JwtTokenUtil {
 
-    private final String SECRET_KEY = "my-wonderful-and-long-and-very-secret--placeholder-key";
+    private final String SECRET_KEY = "my-wonderful-and-long-and-very-secret-placeholder-key";
     private final Long EXPIRATION_TIME_MS = 60L * 60 * 100 * 10; // expires in 10 hours. (number of hours is the last value)
 
     private Key getSigningKey() {
