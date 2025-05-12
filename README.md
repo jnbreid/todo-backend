@@ -42,6 +42,12 @@ The application will run at [http://localhost:8080](http://localhost:8080).
 Swagger UI is available for testing and interacting with the APIs: [http://localhost:8080/swagger-ui/](http://localhost:8080/swagger-ui/)
 
 
+### TODO
+
+- Adjust tests to support JWT authentication.
+
+> **Note:** This project is a work in progress.
+
 ## License
 
 This project is licensed under the MIT License - see the [LICENSE file](LICENSE) for details.
