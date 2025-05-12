@@ -1,6 +1,7 @@
 package com.example.todoapp.task.controller;
 
 import com.example.todoapp.config.JacksonConfig;
+import com.example.todoapp.config.security.JwtTokenUtil;
 import com.example.todoapp.config.security.SecurityConfig;
 import com.example.todoapp.task.Task;
 import com.example.todoapp.task.service.TaskService;
@@ -11,7 +12,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.context.annotation.Import;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 
@@ -25,6 +28,8 @@ import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+
+// TODO adjust test to JwtToken
 
 @WebMvcTest(TaskController.class)
 @Import({SecurityConfig.class, JacksonConfig.class})
@@ -43,6 +48,7 @@ class TaskControllerTest {
 
     private Task task;
     private TaskDTO taskDTO;
+    private String jwtToken;
 
     @BeforeEach
     void setUp() {
@@ -57,8 +63,10 @@ class TaskControllerTest {
         taskDTO = taskMapper.toDTO(task);
     }
 
+    @WithMockUser(username = "username", roles = {"USER"})
     @Test
     void createTaskTest_Success() throws Exception {
+
         String json_payload = objectMapper.writeValueAsString(taskDTO);
 
         mockMvc.perform(post("/api/tasks")

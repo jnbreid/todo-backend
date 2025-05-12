@@ -56,9 +56,4 @@ public class UserController {
 
     }
 
-    //public ResponseEntity<UserDTO> login(@RequestBody UserDTO userDTO) {
-    //    User authenticated = userService.authenticate(userDTO.getUsername(), userDTO.getPassword());
-    //    return ResponseEntity.ok().build();
-    //}
-
 }

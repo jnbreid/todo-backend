@@ -1,14 +1,29 @@
 package com.example.todoapp.task.controller;
 
 import com.example.todoapp.task.Task;
+import com.example.todoapp.user.service.UserService;
+import org.junit.Before;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.time.LocalDate;
 import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.when;
 
+@ExtendWith(MockitoExtension.class)
 public class TaskMapperTest {
+
+    @Mock
+    private UserService userService;
+
+    @InjectMocks
+    private TaskMapper taskMapper;
 
     @Test
     void fromDTOTest() {
@@ -20,7 +35,10 @@ public class TaskMapperTest {
         taskDTO.setComplete(true);
         taskDTO.setUserName("userName");
 
-        Task task = TaskMapper.fromDTO(taskDTO);
+        when(userService.findUserIdByUserName(taskDTO.getUserName()))
+                .thenReturn(1L);
+
+        Task task = taskMapper.fromDTO(taskDTO);
 
         assertNull(task.getId());
         assertEquals(taskDTO.getPublicId(), task.getPublicId());
@@ -41,7 +59,10 @@ public class TaskMapperTest {
         task.setCompleted(true);
         task.setUserId(42L);
 
-        TaskDTO taskDTO = TaskMapper.toDTO(task);
+        when(userService.findUserNameByUserId(task.getUserId()))
+                .thenReturn("username");
+
+        TaskDTO taskDTO = taskMapper.toDTO(task);
 
         assertEquals(task.getPublicId(), taskDTO.getPublicId());
         assertEquals(task.getName(), taskDTO.getName());
