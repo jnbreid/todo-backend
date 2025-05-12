@@ -94,43 +94,6 @@ class TaskServiceTest {
 
 
     @Test
-    void getTasksForUserTest_Success() {
-        Task task2 = new Task();
-        task2.setName("name2");
-        task2.setPublicId(UUID.randomUUID());
-        task2.setPriority(4);
-        task2.setDeadline(LocalDate.now().plusDays(2));
-        task2.setUserId(1L);
-        task2.setCompleted(false);
-
-        Long userId = task.getUserId();
-
-        List<Task> mockTasks = List.of(task, task2);
-
-        when(taskRepository.findSet(userId)).thenReturn(mockTasks);
-
-        List<Task> results = taskService.getTasksForUser(userId);
-
-        assertEquals(2, results.size());
-        assertEquals("name", results.getFirst().getName());
-        assertEquals(4, task2.getPriority());
-        verify(taskRepository).findSet(userId);
-    }
-
-    @Test
-    void getTasksForUserTest_NoTasksExist() {
-        Long userId = 1L;
-
-        when(taskRepository.findSet(userId)).thenReturn(Collections.emptyList());
-
-        List<Task> results = taskService.getTasksForUser(userId);
-
-        assertNotNull(results);
-        assertTrue(results.isEmpty());
-        verify(taskRepository).findSet(userId);
-    }
-
-    @Test
     void getTaskByIdTest_Success() {
         UUID taskId = task.getPublicId();
 

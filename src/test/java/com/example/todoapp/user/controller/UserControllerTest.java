@@ -1,6 +1,7 @@
 package com.example.todoapp.user.controller;
 
 
+import com.example.todoapp.config.security.JwtTokenUtil;
 import com.example.todoapp.config.security.SecurityConfig;
 import com.example.todoapp.user.User;
 import com.example.todoapp.user.service.UserService;
@@ -20,6 +21,9 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+
+
+// TODO remove authenticate test from userService and use correct authentication from the authenticationManager
 
 @WebMvcTest(UserController.class)
 @Import(SecurityConfig.class)
