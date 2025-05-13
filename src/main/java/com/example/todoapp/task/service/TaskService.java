@@ -55,11 +55,11 @@ public class TaskService {
         }
     }
 
-    public void createTask(Task task) {
-        // get the current user and set in task
-        String userName = SecurityContextHolder.getContext().getAuthentication().getName();
-        Long userId =
+    private String getCurrentUserName() {
+        return SecurityContextHolder.getContext().getAuthentication().getName();
+    }
 
+    public void createTask(Task task) {
         validateTask(task);
         taskRepository.create(task);
     }

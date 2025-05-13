@@ -5,8 +5,6 @@ import com.example.todoapp.task.service.TaskService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -42,9 +40,7 @@ public class TaskController {
 
     @GetMapping("/my-tasks")
     public ResponseEntity<List<TaskDTO>> getMyTasks() {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        String userName = authentication.getName();
-        Long userId = taskMapper.getUserIdFromUserName(userName);
+        Long userId = taskMapper.getUserId();
         List<Task> tasks = taskService.getTasksForUser(userId);
         List<TaskDTO> taskDTOs = tasks.stream().map(taskMapper::toDTO).toList();
         return ResponseEntity.ok(taskDTOs);

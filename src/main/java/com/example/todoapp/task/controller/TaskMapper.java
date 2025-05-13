@@ -3,6 +3,8 @@ package com.example.todoapp.task.controller;
 import com.example.todoapp.task.Task;
 import com.example.todoapp.user.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -22,6 +24,10 @@ public class TaskMapper {
         task.setDeadline(taskDTO.getDeadline());
         task.setPriority(taskDTO.getPriority());
         task.setCompleted(taskDTO.getComplete());
+
+        String userName = SecurityContextHolder.getContext().getAuthentication().getName();
+        Long userId = userService.findUserIdByUserName(userName);
+        task.setUserId(userId);
         return task;
     }
 
@@ -39,7 +45,8 @@ public class TaskMapper {
         return taskDTO;
     }
 
-    public Long getUserIdFromUserName(String userName) {
+    public Long getUserId() {
+        String userName = SecurityContextHolder.getContext().getAuthentication().getName();
         return userService.findUserIdByUserName(userName);
     }
 
