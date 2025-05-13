@@ -2,14 +2,21 @@ package com.example.todoapp.task.service;
 
 import com.example.todoapp.task.Task;
 import com.example.todoapp.task.repository.TaskRepository;
+import com.example.todoapp.user.service.UserService;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContext;
+import org.springframework.security.core.context.SecurityContextHolder;
 
 import java.time.LocalDate;
+import java.util.Collections;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -22,21 +29,40 @@ class TaskServiceTest {
     @Mock
     private TaskRepository taskRepository;
 
+    @Mock
+    private UserService userService;
+
     @InjectMocks
     private TaskService taskService;
+
+    private final UUID publicId = UUID.randomUUID();
+    private final Long userId = 1L;
+    private final String username = "username";
 
     private Task task;
 
     @BeforeEach
     void setUp() {
+        // simulate authentication
+        Authentication auth = new UsernamePasswordAuthenticationToken(username, null, Collections.emptyList());
+        SecurityContext context = SecurityContextHolder.createEmptyContext();
+        context.setAuthentication(auth);
+        SecurityContextHolder.setContext(context);
+
+        // prepare test task
         task = new Task();
         task.setId(1L);
-        task.setPublicId(UUID.randomUUID());
+        task.setPublicId(publicId);
         task.setName("name");
         task.setPriority(3);
         task.setDeadline(LocalDate.now().plusDays(1));
-        task.setUserId(1L);
+        task.setUserId(userId);
         task.setCompleted(false);
+    }
+
+    @AfterEach
+    void clearSecurityContext() {
+        SecurityContextHolder.clearContext();
     }
 
     @Test
@@ -118,14 +144,42 @@ class TaskServiceTest {
     }
 
     @Test
-    void updateTaskTest() {
-        UUID taskId = task.getPublicId();
+    void testUpdateTask_Success() {
+        Task existingTask = new Task();
+        existingTask.setPublicId(publicId);
+        existingTask.setUserId(userId);
 
-        when(taskRepository.findByPublicId(taskId)).thenReturn(Optional.of(task));
+        when(taskRepository.findByPublicId(publicId)).thenReturn(Optional.of(existingTask));
+        when(userService.findUserNameByUserId(userId)).thenReturn(username);
 
         taskService.updateTask(task);
 
-        verify(taskRepository).update(task, taskId);
+        verify(taskRepository).update(task, publicId);
+    }
+
+    @Test
+    void testUpdateTask_TaskNotFound() {
+        when(taskRepository.findByPublicId(publicId)).thenReturn(Optional.empty());
+
+        IllegalArgumentException exception = assertThrows(
+                IllegalArgumentException.class,
+                () -> taskService.updateTask(task)
+        );
+
+        assertEquals("Task not found.", exception.getMessage());
+    }
+
+    @Test
+    void testUpdateTask_UnauthorizedUser() {
+        when(taskRepository.findByPublicId(publicId)).thenReturn(Optional.of(task));
+        when(userService.findUserNameByUserId(anyLong())).thenReturn("anotherUser");
+
+        IllegalArgumentException exception = assertThrows(
+                IllegalArgumentException.class,
+                () -> taskService.updateTask(task)
+        );
+
+        assertEquals("Task not found.", exception.getMessage()); // same as not found to avoid info leak
     }
 
     @Test
