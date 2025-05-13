@@ -50,7 +50,7 @@ public class TaskService {
             return taskOptional.get();
         }
         else {
-            throw new IllegalArgumentException("Task with public ID " + publicTaskId.toString() + " not found.");
+            throw new IllegalArgumentException("Task not found."); // same message as when user does not match to task to obscure if a tasks exists for another user
         }
     }
 
