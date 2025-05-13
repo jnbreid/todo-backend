@@ -23,7 +23,7 @@ public class TaskMapper {
         task.setPriority(taskDTO.getPriority());
         task.setCompleted(taskDTO.getComplete());
 
-        Long userId = userService.findUserIdByUserName(taskDTO.getUserName());
+        Long userId = null;
         task.setUserId(userId);
 
         return task;
