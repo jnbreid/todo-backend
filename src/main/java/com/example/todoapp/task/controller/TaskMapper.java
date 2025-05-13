@@ -22,10 +22,6 @@ public class TaskMapper {
         task.setDeadline(taskDTO.getDeadline());
         task.setPriority(taskDTO.getPriority());
         task.setCompleted(taskDTO.getComplete());
-
-        Long userId = null;
-        task.setUserId(userId);
-
         return task;
     }
 
