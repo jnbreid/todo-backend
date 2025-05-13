@@ -4,16 +4,21 @@ import com.example.todoapp.task.Task;
 import com.example.todoapp.user.service.UserService;
 import org.junit.Before;
 import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContext;
+import org.springframework.security.core.context.SecurityContextHolder;
 
 import java.time.LocalDate;
 import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
@@ -25,6 +30,16 @@ public class TaskMapperTest {
     @InjectMocks
     private TaskMapper taskMapper;
 
+    @BeforeEach
+    void setup() {
+        Authentication auth = mock(Authentication.class);
+        when(auth.getName()).thenReturn("testuser");
+
+        SecurityContext securityContext = mock(SecurityContext.class);
+        when(securityContext.getAuthentication()).thenReturn(auth);
+        SecurityContextHolder.setContext(securityContext);
+    }
+
     @Test
     void fromDTOTest() {
         TaskDTO taskDTO = new TaskDTO();
@@ -33,7 +48,7 @@ public class TaskMapperTest {
         taskDTO.setDeadline(LocalDate.of(2020, 10,10));
         taskDTO.setPriority(2);
         taskDTO.setComplete(true);
-        taskDTO.setUserName("userName");
+        taskDTO.setUserName("testuser");
 
         when(userService.findUserIdByUserName(taskDTO.getUserName()))
                 .thenReturn(1L);

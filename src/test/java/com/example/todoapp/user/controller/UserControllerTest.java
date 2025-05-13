@@ -5,10 +5,13 @@ import com.example.todoapp.config.security.JwtTokenUtil;
 import com.example.todoapp.config.security.SecurityConfig;
 import com.example.todoapp.user.User;
 import com.example.todoapp.user.service.UserService;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestInstance;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
 import org.springframework.security.authentication.BadCredentialsException;
@@ -23,11 +26,11 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 
-// TODO remove authenticate test from userService and use correct authentication from the authenticationManager
 
 @WebMvcTest(UserController.class)
 @Import(SecurityConfig.class)
 @AutoConfigureMockMvc(addFilters = false)
+@TestInstance(TestInstance.Lifecycle.PER_CLASS)
 public class UserControllerTest {
 
     @Autowired
@@ -38,20 +41,21 @@ public class UserControllerTest {
 
     private final ObjectMapper objectMapper = new ObjectMapper();
 
-    @Test
-    void registerUserTest() throws Exception{
+    private final String username = "username";
+    private final String password = "password";
+
+    @BeforeAll
+    public void setUp() throws Exception {
         UserDTO userDTO = new UserDTO();
-        userDTO.setUsername("username");
-        userDTO.setPassword("password");
+        userDTO.setUsername(username);
+        userDTO.setPassword(password);
 
         mockMvc.perform(post("/api/users/register")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(userDTO)))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(userDTO)))
                 .andExpect(status().isCreated());
-
-        verify(userService).registerUser(any(User.class));
-
     }
+
 
     @Test
     void loginTest_Success() throws Exception{
@@ -69,7 +73,8 @@ public class UserControllerTest {
         mockMvc.perform(post("/api/users/login")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(userDTO)))
-                .andExpect(status().isOk());
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.token").exists());
     }
 
     @Test
@@ -120,5 +125,20 @@ public class UserControllerTest {
                 .content(objectMapper.writeValueAsString(userDTO)))
                 .andExpect(status().isInternalServerError())
                 .andExpect(content().string("An unexpected error occurred."));
+    }
+
+    @Test
+    void registerUserTest() throws Exception{
+        UserDTO userDTO = new UserDTO();
+        userDTO.setUsername("username");
+        userDTO.setPassword("password");
+
+        mockMvc.perform(post("/api/users/register")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(userDTO)))
+                .andExpect(status().isCreated());
+
+        verify(userService).registerUser(any(User.class));
+
     }
 }
