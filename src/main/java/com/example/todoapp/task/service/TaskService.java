@@ -2,7 +2,6 @@ package com.example.todoapp.task.service;
 
 import com.example.todoapp.task.Task;
 import com.example.todoapp.task.repository.TaskRepository;
-import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
