@@ -54,10 +54,6 @@ public class TaskService {
         }
     }
 
-    private String getCurrentUserName() {
-        return SecurityContextHolder.getContext().getAuthentication().getName();
-    }
-
     public void createTask(Task task) {
         validateTask(task);
         taskRepository.create(task);
