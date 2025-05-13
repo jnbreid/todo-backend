@@ -2,6 +2,8 @@ package com.example.todoapp.task.service;
 
 import com.example.todoapp.task.Task;
 import com.example.todoapp.task.repository.TaskRepository;
+import com.example.todoapp.user.service.UserService;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
@@ -12,13 +14,15 @@ import java.util.UUID;
 @Service
 public class TaskService {
     private final TaskRepository taskRepository;
+    private final UserService userService;
 
     private static final int MIN_PRIORITY = 1;
     private static final int MAX_PRIORITY = 5;
     private static final int MAX_NAME = 80;
 
-    public TaskService(TaskRepository taskRepository) {
+    public TaskService(TaskRepository taskRepository, UserService userService) {
         this.taskRepository = taskRepository;
+        this.userService = userService;
     }
 
     private Task requiresExistingTask(Long taskId) {
@@ -27,7 +31,16 @@ public class TaskService {
             return taskOptional.get();
         }
         else {
-            throw new IllegalArgumentException("Task with ID " + taskId + " not found.");
+            throw new IllegalArgumentException("Task not found."); // same message as when user does not match to task to obscure if a tasks exists for another user
+        }
+    }
+
+    public void verifyTaskOwnership(Task task) {
+        String currentUsername = SecurityContextHolder.getContext().getAuthentication().getName();
+        String taskOwnerUsername = userService.findUserNameByUserId(task.getUserId());
+
+        if (!currentUsername.equals(taskOwnerUsername)) {
+            throw new IllegalArgumentException("Task not found."); // same as for non-existing task
         }
     }
 
@@ -73,12 +86,14 @@ public class TaskService {
     public void updateTask(Task task) {
         validateTask(task);
 
-        requiresExistingTask(task.getPublicId());
+        Task existingTask = requiresExistingTask(task.getPublicId());
+        verifyTaskOwnership(existingTask);
         taskRepository.update(task, task.getPublicId());
     }
 
     public void markTaskAsCompleted(Long taskId) {
         Task task = requiresExistingTask(taskId);
+        verifyTaskOwnership(task);
 
         task.setCompleted(true);
         taskRepository.update(task, task.getId());
@@ -86,18 +101,21 @@ public class TaskService {
 
     public void markTaskAsCompleted(UUID publicTaskId) {
         Task task = requiresExistingTask(publicTaskId);
+        verifyTaskOwnership(task);
 
         task.setCompleted(true);
         taskRepository.update(task, task.getPublicId());
     }
 
     public void deleteTask(Long taskId){
-        requiresExistingTask(taskId);
+        Task delTask = requiresExistingTask(taskId);
+        verifyTaskOwnership(delTask);
         taskRepository.delete(taskId);
     }
 
     public void deleteTask(UUID publicTaskId){
-        requiresExistingTask(publicTaskId);
+        Task delTask = requiresExistingTask(publicTaskId);
+        verifyTaskOwnership(delTask);
         taskRepository.delete(publicTaskId);
     }
 }
