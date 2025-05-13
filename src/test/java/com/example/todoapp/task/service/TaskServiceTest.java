@@ -182,27 +182,46 @@ class TaskServiceTest {
         assertEquals("Task not found.", exception.getMessage()); // same as not found to avoid info leak
     }
 
+
     @Test
-    void deleteTaskTest_Success() {
-        UUID taskId = task.getPublicId();
+    public void deleteTask_UnauthorizedUser() {
+        String unauthorizedUser = "unauthorizedUser";
 
-        when(taskRepository.findByPublicId(taskId)).thenReturn(Optional.of(task));
+        when(userService.findUserNameByUserId(task.getUserId())).thenReturn(unauthorizedUser);
+        when(taskRepository.findByPublicId(task.getPublicId())).thenReturn(Optional.of(task));
 
-        taskService.deleteTask(taskId);
-
-        verify(taskRepository).delete(taskId);
+        assertThrows(IllegalArgumentException.class, () -> {
+            taskService.deleteTask(task.getPublicId());
+        });
     }
 
     @Test
-    void deleteTaskTest_NotExistingTask() {
-        UUID taskId = task.getPublicId();
+    public void deleteTask_TaskNotFound() {
+        // Given - Task does not exist
+        UUID nonExistentTaskId = UUID.randomUUID();
 
-        when(taskRepository.findByPublicId(taskId)).thenReturn(Optional.empty());
+        // Mock the method call to find the task, it returns an empty Optional (task not found)
+        when(taskRepository.findByPublicId(nonExistentTaskId)).thenReturn(Optional.empty());
 
-        assertThrows(IllegalArgumentException.class, () ->
-                taskService.deleteTask(taskId));
+        // When & Then - Verify IllegalArgumentException is thrown for task not found
+        assertThrows(IllegalArgumentException.class, () -> {
+            taskService.deleteTask(nonExistentTaskId);
+        });
+    }
 
-        verify(taskRepository, never()).delete(any(UUID.class));
+    @Test
+    public void deleteTask_AuthorizedUser_Success() {
+        String authorizedUser = username;
+
+        when(userService.findUserNameByUserId(task.getUserId())).thenReturn(authorizedUser);
+
+        when(taskRepository.findByPublicId(task.getPublicId())).thenReturn(Optional.of(task));
+
+        SecurityContextHolder.getContext().setAuthentication(new UsernamePasswordAuthenticationToken(authorizedUser, null));
+
+        taskService.deleteTask(task.getPublicId());
+
+        verify(taskRepository).delete(task.getPublicId());
     }
 
 
