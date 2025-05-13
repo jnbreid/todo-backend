@@ -17,6 +17,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 
 import java.time.LocalDate;
 import java.util.Collections;
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -197,13 +198,11 @@ class TaskServiceTest {
 
     @Test
     public void deleteTask_TaskNotFound() {
-        // Given - Task does not exist
+
         UUID nonExistentTaskId = UUID.randomUUID();
 
-        // Mock the method call to find the task, it returns an empty Optional (task not found)
-        when(taskRepository.findByPublicId(nonExistentTaskId)).thenReturn(Optional.empty());
+       when(taskRepository.findByPublicId(nonExistentTaskId)).thenReturn(Optional.empty());
 
-        // When & Then - Verify IllegalArgumentException is thrown for task not found
         assertThrows(IllegalArgumentException.class, () -> {
             taskService.deleteTask(nonExistentTaskId);
         });
@@ -224,5 +223,30 @@ class TaskServiceTest {
         verify(taskRepository).delete(task.getPublicId());
     }
 
+    @Test
+    public void getTasksForUser_Success() {
+
+        Long userId = 1L;
+        List<Task> mockTasks = List.of(
+                new Task(1L, UUID.randomUUID(), "task1", LocalDate.now(), 1, false, 1L),
+                new Task(1L, UUID.randomUUID(), "task2", LocalDate.now(), 2, true, 1L)
+        );
+
+        when(taskRepository.findSet(userId)).thenReturn(mockTasks);
+        List<Task> result = taskService.getTasksForUser(userId);
+
+        assertEquals(2, result.size());
+        assertEquals("task1", result.getFirst().getName());
+    }
+
+    @Test
+    public void getTasksForUser_EmptyList() {
+        Long userId = 2L;
+
+        when(taskRepository.findSet(userId)).thenReturn(Collections.emptyList());
+        List<Task> result = taskService.getTasksForUser(userId);
+
+        assertTrue(result.isEmpty());
+    }
 
 }
