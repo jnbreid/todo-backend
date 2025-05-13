@@ -27,7 +27,15 @@ public class TaskController {
 
     @PostMapping
     public ResponseEntity<Void> createTask(@RequestBody TaskDTO taskDTO) {
+
+        // get the current user and create a task for them
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String userName = authentication.getName();
+
+        taskDTO.setUserName(userName);
+
         Task task = taskMapper.fromDTO(taskDTO);
+
         taskService.createTask(task);
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }

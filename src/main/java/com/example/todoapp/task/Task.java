@@ -14,8 +14,6 @@ public class Task {
     @Column(name = "public_id", updatable = false, nullable = false)
     private UUID publicId;
 
-
-
     private String name;
     private LocalDate deadline;
     private Integer priority;
