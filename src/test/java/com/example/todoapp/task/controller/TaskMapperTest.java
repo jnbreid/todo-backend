@@ -2,9 +2,7 @@ package com.example.todoapp.task.controller;
 
 import com.example.todoapp.task.Task;
 import com.example.todoapp.user.service.UserService;
-import org.junit.Before;
 import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -30,8 +28,8 @@ public class TaskMapperTest {
     @InjectMocks
     private TaskMapper taskMapper;
 
-    @BeforeEach
-    void setup() {
+    @BeforeAll
+    static void setup() {
         Authentication auth = mock(Authentication.class);
         when(auth.getName()).thenReturn("testuser");
 
@@ -45,6 +43,7 @@ public class TaskMapperTest {
         TaskDTO taskDTO = new TaskDTO();
         taskDTO.setPublicId(UUID.randomUUID());
         taskDTO.setName("name");
+        taskDTO.setDescription("description");
         taskDTO.setDeadline(LocalDate.of(2020, 10,10));
         taskDTO.setPriority(2);
         taskDTO.setComplete(true);
@@ -58,6 +57,7 @@ public class TaskMapperTest {
         assertNull(task.getId());
         assertEquals(taskDTO.getPublicId(), task.getPublicId());
         assertEquals(taskDTO.getName(), task.getName());
+        assertEquals(taskDTO.getDescription(), task.getDescription());
         assertTrue(taskDTO.getDeadline().isEqual(task.getDeadline()));
         assertEquals(taskDTO.getPriority(), task.getPriority());
         assertEquals(taskDTO.getComplete(), task.getCompleted());
@@ -69,18 +69,20 @@ public class TaskMapperTest {
         task.setId(1L);
         task.setPublicId(UUID.randomUUID());
         task.setName("name");
+        task.setDescription("description");
         task.setDeadline(LocalDate.of(2020, 10,10));
         task.setPriority(2);
         task.setCompleted(true);
         task.setUserId(42L);
 
         when(userService.findUserNameByUserId(task.getUserId()))
-                .thenReturn("username");
+                .thenReturn("testuser");
 
         TaskDTO taskDTO = taskMapper.toDTO(task);
 
         assertEquals(task.getPublicId(), taskDTO.getPublicId());
         assertEquals(task.getName(), taskDTO.getName());
+        assertEquals(task.getDescription(), taskDTO.getDescription());
         assertTrue(task.getDeadline().isEqual(taskDTO.getDeadline()));
         assertEquals(task.getPriority(), taskDTO.getPriority());
         assertEquals(task.getCompleted(), taskDTO.getComplete());
