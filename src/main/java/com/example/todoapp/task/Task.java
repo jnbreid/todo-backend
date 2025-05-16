@@ -15,6 +15,7 @@ public class Task {
     private UUID publicId;
 
     private String name;
+    private String description;
     private LocalDate deadline;
     private Integer priority;
     private Boolean completed;
@@ -23,9 +24,11 @@ public class Task {
     public Task() {
     }
 
-    public Task(Long id, UUID publicId, String name, LocalDate deadline, Integer priority, Boolean completed, Long userId) {
+    public Task(Long id, UUID publicId, String name, String description, LocalDate deadline, Integer priority, Boolean completed, Long userId) {
         this.id = id;
+        this.publicId = publicId;
         this.name = name;
+        this.description = description;
         this.deadline = deadline;
         this.priority = priority;
         this.completed = completed;
@@ -34,6 +37,14 @@ public class Task {
 
     public UUID getPublicId() {
         return publicId;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
     }
 
     public void setPublicId(UUID publicId) {

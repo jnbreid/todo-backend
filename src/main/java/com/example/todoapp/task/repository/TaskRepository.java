@@ -22,12 +22,12 @@ public class TaskRepository {
     RowMapper<Task> rowMapper = new TaskRowMapper();
 
     public int create(Task task) {
-        String sql = "INSERT INTO tasks (name, deadline, priority, completed, user_id) VALUES (?, ?, ?, ?, ?)";
-        return client.sql(sql).params(task.getName(), task.getDeadline(), task.getPriority(), task.getCompleted(), task.getUserId()).update();
+        String sql = "INSERT INTO tasks (name, description, deadline, priority, completed, user_id) VALUES (?, ?, ?, ?, ?, ?)";
+        return client.sql(sql).params(task.getName(), task.getDescription(), task.getDeadline(), task.getPriority(), task.getCompleted(), task.getUserId()).update();
     }
 
     public List<Task> findSet(long userId) {
-        String sql = "SELECT * FROM tasks WHERE user_id = ?";
+        String sql = "SELECT * FROM tasks WHERE user_id = ? ORDER BY deadline DESC";
         return client.sql(sql).params(userId).query(rowMapper).list();
     }
 
@@ -42,9 +42,10 @@ public class TaskRepository {
     }
 
     public int update(Task task, long taskId) {
-        String sql = "UPDATE tasks SET name = ?, deadline = ?, priority = ?, completed = ?, user_id = ? WHERE id = ?";
+        String sql = "UPDATE tasks SET name = ?, description = ?, deadline = ?, priority = ?, completed = ?, user_id = ? WHERE id = ?";
         return client.sql(sql).params(
                 task.getName(),
+                task.getDescription(),
                 task.getDeadline(),
                 task.getPriority(),
                 task.getCompleted(),
@@ -54,9 +55,10 @@ public class TaskRepository {
     }
 
     public int update(Task task, UUID publicTaskId) {
-        String sql = "UPDATE tasks SET name = ?, deadline = ?, priority = ?, completed = ?, user_id = ? WHERE public_id = ?";
+        String sql = "UPDATE tasks SET name = ?, description = ?, deadline = ?, priority = ?, completed = ?, user_id = ? WHERE public_id = ?";
         return client.sql(sql).params(
                 task.getName(),
+                task.getDescription(),
                 task.getDeadline(),
                 task.getPriority(),
                 task.getCompleted(),

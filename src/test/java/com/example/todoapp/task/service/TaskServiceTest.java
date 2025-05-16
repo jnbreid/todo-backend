@@ -228,8 +228,8 @@ class TaskServiceTest {
 
         Long userId = 1L;
         List<Task> mockTasks = List.of(
-                new Task(1L, UUID.randomUUID(), "task1", LocalDate.now(), 1, false, 1L),
-                new Task(1L, UUID.randomUUID(), "task2", LocalDate.now(), 2, true, 1L)
+                new Task(1L, UUID.randomUUID(), "task1","description",  LocalDate.now(), 1, false, 1L),
+                new Task(1L, UUID.randomUUID(), "task2","description",  LocalDate.now(), 2, true, 1L)
         );
 
         when(taskRepository.findSet(userId)).thenReturn(mockTasks);

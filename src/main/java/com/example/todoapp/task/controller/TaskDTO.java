@@ -8,6 +8,7 @@ import java.util.UUID;
 public class TaskDTO {
     private UUID publicId;
     private String name;
+    private String description;
 
     @JsonFormat(pattern = "yyyy-MM-dd")
     private LocalDate deadline;
@@ -61,5 +62,13 @@ public class TaskDTO {
 
     public void setUserName(String userName) {
         this.userName = userName;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
     }
 }

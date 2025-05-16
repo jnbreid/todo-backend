@@ -48,7 +48,7 @@ public class UserController {
             final UserDetails userDetails = userDetailsService.loadUserByUsername(request.getUsername());
             final String token = jwtTokenUtil.generateToken(userDetails);
 
-            return ResponseEntity.ok(new AuthenticationResponse(token));
+            return ResponseEntity.ok(new AuthenticationResponse(token, request.getUsername()));
 
         } catch (BadCredentialsException ex) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();

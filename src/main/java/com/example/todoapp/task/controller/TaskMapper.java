@@ -20,6 +20,7 @@ public class TaskMapper {
         Task task = new Task();
         task.setPublicId(taskDTO.getPublicId());
         task.setName(taskDTO.getName());
+        task.setDescription(taskDTO.getDescription());
         task.setDeadline(taskDTO.getDeadline());
         task.setPriority(taskDTO.getPriority());
         task.setCompleted(taskDTO.getComplete());
@@ -34,6 +35,7 @@ public class TaskMapper {
         TaskDTO taskDTO = new TaskDTO();
         taskDTO.setPublicId(task.getPublicId());
         taskDTO.setName(task.getName());
+        taskDTO.setDescription(task.getDescription());
         taskDTO.setDeadline(task.getDeadline());
         taskDTO.setPriority(task.getPriority());
         taskDTO.setComplete(task.getCompleted());
