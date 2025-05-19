@@ -2,7 +2,9 @@ package com.example.todoapp.user.service;
 
 import com.example.todoapp.user.User;
 import com.example.todoapp.user.repository.UserRepository;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -60,5 +62,22 @@ public class UserService {
             throw new IllegalArgumentException("User not found.");
         }
         return existing.get().getUsername();
+    }
+
+    public void deleteSelf(User delUser) {
+        String username = delUser.getUsername();
+        String rawPassword = delUser.getPassword();
+
+        Optional<User> foundUser = userRepository.findByUsername(username).filter(user -> passwordEncoder.matches(rawPassword, user.getPassword()));
+        if (foundUser.isEmpty()) {
+            throw new BadCredentialsException("Invalid password or username.");
+        }
+
+        String authUsername = SecurityContextHolder.getContext().getAuthentication().getName();
+        if (!authUsername.equals(username)) {
+            throw new AccessDeniedException("You can only delete your own account.");
+        }
+
+        userRepository.delete(username);
     }
 }
