@@ -10,3 +10,4 @@ spring:
     password: secret
     url: jdbc:postgresql://localhost:5432/postgres
     driver-class-name: org.postgresql.Driver
+JWT_SECRET: my-secret-and-long-and-very-secret-dev-placeholder-key
