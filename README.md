@@ -22,8 +22,8 @@ This is the backend of a Task Management system built with **Spring Boot** and *
 ### 1. Clone the repository
 
 ```bash
-git clone https://github.com/your-username/your-repository-name.git
-cd your-repository-name
+git clone https://github.com/jnbreid/todo-backend.git
+cd jnbreid
 ```
 
 ### 2. Build the application
