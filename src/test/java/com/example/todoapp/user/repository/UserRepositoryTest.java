@@ -1,3 +1,8 @@
+/*
+ * SPDX-License-Identifier: MIT
+ * Copyright (c) 2025 Jon Breid
+ */
+
 package com.example.todoapp.user.repository;
 
 import com.example.todoapp.user.User;
@@ -15,7 +20,6 @@ import java.util.List;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
-
 
 @SpringBootTest
 @Testcontainers

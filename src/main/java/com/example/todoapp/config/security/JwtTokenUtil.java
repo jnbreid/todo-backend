@@ -1,5 +1,9 @@
-package com.example.todoapp.config.security;
+/*
+ * SPDX-License-Identifier: MIT
+ * Copyright (c) 2025 Jon Breid
+ */
 
+package com.example.todoapp.config.security;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;

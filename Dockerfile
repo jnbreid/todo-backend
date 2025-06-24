@@ -1,3 +1,6 @@
+# SPDX-License-Identifier: MIT
+# Copyright (c) 2025 Jon Breid
+
 # build application
 FROM gradle:8.4-jdk21 AS build
 WORKDIR /app

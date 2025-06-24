@@ -1,5 +1,9 @@
-package com.example.todoapp.user.controller;
+/*
+ * SPDX-License-Identifier: MIT
+ * Copyright (c) 2025 Jon Breid
+ */
 
+package com.example.todoapp.user.controller;
 
 import com.example.todoapp.config.security.JwtTokenUtil;
 import com.example.todoapp.config.security.SecurityConfig;
@@ -24,8 +28,6 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
-
-
 
 @WebMvcTest(UserController.class)
 @Import(SecurityConfig.class)

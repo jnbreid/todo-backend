@@ -1,3 +1,8 @@
+/*
+ * SPDX-License-Identifier: MIT
+ * Copyright (c) 2025 Jon Breid
+ */
+
 package com.example.todoapp.task;
 
 import jakarta.persistence.*;

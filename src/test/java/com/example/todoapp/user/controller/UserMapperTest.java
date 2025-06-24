@@ -1,3 +1,8 @@
+/*
+ * SPDX-License-Identifier: MIT
+ * Copyright (c) 2025 Jon Breid
+ */
+
 package com.example.todoapp.user.controller;
 
 import com.example.todoapp.user.User;
