@@ -23,23 +23,21 @@ This is the backend of a Task Management system built with **Spring Boot** and *
 
 ```bash
 git clone https://github.com/jnbreid/todo-backend.git
-cd jnbreid
+cd todo-backend
 ```
 
 ### 2. Build the application
 
 ```bash
-./gradlew build
+docker compose -f docker-compose.yml build
 ```
 
 ### 3. Run the application
 
 ```bash
-./gradlew bootRun
+docker compose -f docker-compose.yml build
 ```
 The application will run at [http://localhost:8080](http://localhost:8080).
-
-Swagger UI is available for testing and interacting with the APIs: [http://localhost:8080/swagger-ui/](http://localhost:8080/swagger-ui/)
 
 
 ### TODO
