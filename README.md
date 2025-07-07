@@ -35,7 +35,7 @@ docker compose -f docker-compose.yml build
 ### 3. Run the application
 
 ```bash
-docker compose -f docker-compose.yml build
+docker compose -f docker-compose.yml up
 ```
 The application will run at [http://localhost:8080](http://localhost:8080).
 
