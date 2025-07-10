@@ -34,10 +34,9 @@ public class UserService {
 
     public void registerUser(User user) {
         validateUser(user);
-        Optional<User> existing = this.userRepository.findByUsername(user.getUsername());
-        if (existing.isPresent()) {
+        this.userRepository.findByUsername(user.getUsername()).ifPresent( variable -> {
             throw new IllegalArgumentException("Creating user failed.");
-        }
+        });
 
         String hashedPassword = passwordEncoder.encode(user.getPassword());
         user.setPassword(hashedPassword);
@@ -45,12 +44,7 @@ public class UserService {
     }
 
     public User authenticate(String username, String rawPassword) {
-        Optional<User> foundUser = userRepository.findByUsername(username).filter(user -> passwordEncoder.matches(rawPassword, user.getPassword()));
-        if (foundUser.isEmpty()) {
-            throw new BadCredentialsException("Invalid password or username.");
-        }
-        return foundUser.get();
-
+        return userRepository.findByUsername(username).filter(user -> passwordEncoder.matches(rawPassword, user.getPassword())).orElseThrow(() -> new BadCredentialsException("Invalid password or username."));
     }
 
     public Long findUserIdByUserName(String userName) {

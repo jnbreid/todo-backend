@@ -6,6 +6,7 @@
 package com.example.todoapp.task.controller;
 
 import com.example.todoapp.config.JacksonConfig;
+import com.example.todoapp.config.RestTestConfig;
 import com.example.todoapp.config.security.JwtTokenUtil;
 import com.example.todoapp.config.security.SecurityConfig;
 import com.example.todoapp.task.Task;
@@ -37,7 +38,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 // TODO adjust test to JwtToken
 
 @WebMvcTest(TaskController.class)
-@Import({SecurityConfig.class, JacksonConfig.class})
+@Import({RestTestConfig.class, JacksonConfig.class})
 @AutoConfigureMockMvc(addFilters = false)
 class TaskControllerTest {
 

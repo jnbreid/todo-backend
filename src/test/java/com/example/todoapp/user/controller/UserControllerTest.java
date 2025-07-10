@@ -5,6 +5,8 @@
 
 package com.example.todoapp.user.controller;
 
+import com.example.todoapp.config.RestTestConfig;
+import com.example.todoapp.config.security.CustomUserDetailsService;
 import com.example.todoapp.config.security.JwtTokenUtil;
 import com.example.todoapp.config.security.SecurityConfig;
 import com.example.todoapp.user.User;
@@ -18,6 +20,7 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
+import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
@@ -30,7 +33,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @WebMvcTest(UserController.class)
-@Import(SecurityConfig.class)
+@Import(RestTestConfig.class)
 @AutoConfigureMockMvc(addFilters = false)
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 public class UserControllerTest {
@@ -40,23 +43,17 @@ public class UserControllerTest {
 
     @MockitoBean
     private UserService userService;
+    @MockitoBean
+    private AuthenticationManager authenticationManager;
+    @MockitoBean
+    private CustomUserDetailsService userDetailsService;
+    @MockitoBean
+    private JwtTokenUtil jwtTokenUtil;
 
     private final ObjectMapper objectMapper = new ObjectMapper();
 
     private final String username = "username";
     private final String password = "password";
-
-    @BeforeAll
-    public void setUp() throws Exception {
-        UserDTO userDTO = new UserDTO();
-        userDTO.setUsername(username);
-        userDTO.setPassword(password);
-
-        mockMvc.perform(post("/api/users/register")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(userDTO)))
-                .andExpect(status().isCreated());
-    }
 
 
     @Test
