@@ -25,18 +25,20 @@ public class UserController {
     private final AuthenticationManager authenticationManager;
     private final CustomUserDetailsService userDetailsService;
     private final JwtTokenUtil jwtTokenUtil;
+    private final UserMapper userMapper;
 
 
-    public UserController(UserService userService, AuthenticationManager authenticationManager, CustomUserDetailsService userDetailsService, JwtTokenUtil jwtTokenUtil) {
+    public UserController(UserService userService, AuthenticationManager authenticationManager, CustomUserDetailsService userDetailsService, JwtTokenUtil jwtTokenUtil, UserMapper userMapper) {
         this.userService = userService;
         this.authenticationManager = authenticationManager;
         this.userDetailsService = userDetailsService;
         this.jwtTokenUtil = jwtTokenUtil;
+        this.userMapper = userMapper;
     }
 
     @PostMapping("/register")
     public ResponseEntity<Void> registerUser(@RequestBody UserDTO userDTO) {
-        User user = UserMapper.fromDTO(userDTO);
+        User user = userMapper.fromDTO(userDTO);
         userService.registerUser(user);
         return ResponseEntity.status(HttpStatus.CREATED).build();
 
@@ -59,7 +61,7 @@ public class UserController {
 
     @DeleteMapping("/delete")
     public ResponseEntity<Void> deleteSelf(@RequestBody UserDTO request) {
-        User user = UserMapper.fromDTO(request);
+        User user = userMapper.fromDTO(request);
         userService.deleteSelf(user);
         return ResponseEntity.noContent().build();
     }
