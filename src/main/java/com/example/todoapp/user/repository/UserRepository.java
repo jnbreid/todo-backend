@@ -18,12 +18,12 @@ import java.util.Optional;
 @Transactional
 public class UserRepository {
     private final JdbcClient client;
+    private final UserRowMapper rowMapper;
 
-    public UserRepository(JdbcClient client) {
+    public UserRepository(JdbcClient client, UserRowMapper userRowMapper) {
         this.client = client;
+        this.rowMapper = userRowMapper;
     }
-
-    RowMapper<User> rowMapper = new UserRowMapper();
 
     public int create(User user) {
         String sql = "INSERT INTO users (username, password) VALUES (?, ?)";
