@@ -47,6 +47,7 @@ public class UserService {
         return userRepository.findByUsername(username).filter(user -> passwordEncoder.matches(rawPassword, user.getPassword())).orElseThrow(() -> new BadCredentialsException("Invalid password or username."));
     }
 
+
     public Long findUserIdByUserName(String userName) {
         Optional<User> existing = this.userRepository.findByUsername(userName);
         if (existing.isEmpty()) {
