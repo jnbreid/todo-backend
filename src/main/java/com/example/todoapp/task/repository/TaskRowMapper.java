@@ -7,11 +7,13 @@ package com.example.todoapp.task.repository;
 
 import com.example.todoapp.task.Task;
 import org.springframework.jdbc.core.RowMapper;
+import org.springframework.stereotype.Component;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.UUID;
 
+@Component
 public class TaskRowMapper implements RowMapper<Task> {
     @Override
     public Task mapRow(ResultSet rs, int rowNum) throws SQLException {

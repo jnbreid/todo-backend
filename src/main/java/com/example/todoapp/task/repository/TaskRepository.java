@@ -19,12 +19,13 @@ import java.util.UUID;
 @Transactional
 public class TaskRepository {
     private final JdbcClient client;
+    private final TaskRowMapper rowMapper;
 
-    public TaskRepository(JdbcClient client) {
+    public TaskRepository(JdbcClient client, TaskRowMapper taskRowMapper) {
         this.client = client;
+        this.rowMapper = taskRowMapper;
     }
 
-    RowMapper<Task> rowMapper = new TaskRowMapper();
 
     public int create(Task task) {
         String sql = "INSERT INTO tasks (name, description, deadline, priority, completed, user_id) VALUES (?, ?, ?, ?, ?, ?)";
