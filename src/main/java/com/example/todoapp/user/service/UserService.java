@@ -57,11 +57,9 @@ public class UserService {
     }
 
     public String findUserNameByUserId(Long userId) {
-        Optional<User> existing = userRepository.findById(userId);
-        if (existing.isEmpty()) {
-            throw new IllegalArgumentException("User not found.");
-        }
-        return existing.get().getUsername();
+        return userRepository.findById(userId).map(User::getUsername).orElseThrow(
+                () -> new IllegalArgumentException("User not found.")
+        );
     }
 
     public void deleteSelf(User delUser) {
