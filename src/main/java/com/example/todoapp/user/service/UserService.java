@@ -34,7 +34,7 @@ public class UserService {
 
     public void registerUser(User user) {
         validateUser(user);
-        this.userRepository.findByUsername(user.getUsername()).ifPresent( variable -> {
+        userRepository.findByUsername(user.getUsername()).ifPresent( variable -> {
             throw new IllegalArgumentException("Creating user failed.");
         });
 
@@ -44,20 +44,20 @@ public class UserService {
     }
 
     public User authenticate(String username, String rawPassword) {
-        return userRepository.findByUsername(username).filter(user -> passwordEncoder.matches(rawPassword, user.getPassword())).orElseThrow(() -> new BadCredentialsException("Invalid password or username."));
+        return userRepository.findByUsername(username).filter(
+                user -> passwordEncoder.matches(rawPassword, user.getPassword())).orElseThrow(
+                        () -> new BadCredentialsException("Invalid password or username."));
     }
 
 
     public Long findUserIdByUserName(String userName) {
-        Optional<User> existing = this.userRepository.findByUsername(userName);
-        if (existing.isEmpty()) {
-            throw new IllegalArgumentException("User not found.");
-        }
-        return existing.get().getId();
+        return userRepository.findByUsername(userName).map(User::getId).orElseThrow(
+                () -> new IllegalArgumentException("User not found.")
+        );
     }
 
     public String findUserNameByUserId(Long userId) {
-        Optional<User> existing = this.userRepository.findById(userId);
+        Optional<User> existing = userRepository.findById(userId);
         if (existing.isEmpty()) {
             throw new IllegalArgumentException("User not found.");
         }
