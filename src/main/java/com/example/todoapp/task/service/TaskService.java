@@ -8,6 +8,7 @@ package com.example.todoapp.task.service;
 import com.example.todoapp.task.Task;
 import com.example.todoapp.task.repository.TaskRepository;
 import com.example.todoapp.user.service.UserService;
+import jakarta.persistence.EntityNotFoundException;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
@@ -31,13 +32,9 @@ public class TaskService {
     }
 
     private Task requiresExistingTask(Long taskId) {
-        Optional<Task> taskOptional = taskRepository.findById(taskId);
-        if (taskOptional.isPresent()) {
-            return taskOptional.get();
-        }
-        else {
-            throw new IllegalArgumentException("Task not found."); // same message as when user does not match to task to obscure if a tasks exists for another user
-        }
+        return taskRepository.findById(taskId).orElseThrow(
+                () -> new EntityNotFoundException("Task not found.")
+        );
     }
 
     public void verifyTaskOwnership(Task task) {
