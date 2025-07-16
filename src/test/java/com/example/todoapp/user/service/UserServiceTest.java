@@ -152,6 +152,35 @@ public class UserServiceTest {
         assertThrows(IllegalArgumentException.class, () -> userService.findUserIdByUserName(user.getUsername()));
     }
 
+    @Test
+    void findUserNameByUserId_Success() {
+        User user = new User();
+        user.setUsername("UserName");
+        user.setPassword("hashedPassword");
+        user.setId(1L);
+
+        //mock user found
+        when(userRepository.findById(user.getId())).thenReturn(Optional.of(user));
+
+        //
+        String name = userService.findUserNameByUserId(user.getId());
+        assertEquals(user.getUsername(), name);
+    }
+
+    @Test
+    void findUserNameByUserId_Failure() {
+        User user = new User();
+        user.setUsername("UserName");
+        user.setPassword("hashedPassword");
+        user.setId(1L);
+
+        //mock user found
+        when(userRepository.findById(user.getId())).thenReturn(Optional.empty());
+
+        //
+        assertThrows(IllegalArgumentException.class, () -> userService.findUserNameByUserId(user.getId()));
+    }
+
 }
 
 
