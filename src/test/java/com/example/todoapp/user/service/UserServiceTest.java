@@ -12,9 +12,20 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContext;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.test.context.support.WithMockUser;
+import org.springframework.security.test.context.support.WithSecurityContextTestExecutionListener;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.TestExecutionListeners;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 
+import java.util.List;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -179,6 +190,94 @@ public class UserServiceTest {
 
         //
         assertThrows(IllegalArgumentException.class, () -> userService.findUserNameByUserId(user.getId()));
+    }
+
+
+    @Test
+    void delteSelf_success() {
+        // initialize security context
+
+        // 1. Create an empty context
+        SecurityContext ctx = SecurityContextHolder.createEmptyContext();
+
+        // 2. Build an Authentication (username, credentials, authorities)
+        Authentication auth = new UsernamePasswordAuthenticationToken(
+                "UserName",
+                "ignored-password",
+                List.of()
+        );
+        ctx.setAuthentication(auth);
+        SecurityContextHolder.setContext(ctx);
+
+        // initialize other objects needed for tests
+
+        User userIncoming = new User();
+        userIncoming.setUsername("UserName");
+        userIncoming.setPassword("rawPassword");
+        userIncoming.setId(1L);
+
+        User userStored = new User();
+        userStored.setUsername("UserName");
+        userStored.setPassword("hashedPassword");
+        userStored.setId(1L);
+
+        when(userRepository.findByUsername(userIncoming.getUsername())).thenReturn(Optional.of(userStored));
+        when(passwordEncoder.matches("rawPassword", "hashedPassword")).thenReturn(true);
+
+        userService.deleteSelf(userIncoming);
+
+        verify(userRepository).delete("UserName");
+    }
+
+    @Test
+    void deleteSelf_failure_incorrectPassword() {
+        User userIncoming = new User();
+        userIncoming.setUsername("UserName");
+        userIncoming.setPassword("rawPassword");
+        userIncoming.setId(1L);
+
+        when(userRepository.findByUsername(userIncoming.getUsername())).thenReturn(Optional.empty());
+
+        assertThrows(BadCredentialsException.class, () -> userService.deleteSelf(userIncoming));
+
+        verify(userRepository, never()).delete(anyString());
+    }
+
+    @Test
+    void delteSelf_failure_notCurrentUser() {
+        // initialize security context
+
+        // 1. Create an empty context
+        SecurityContext ctx = SecurityContextHolder.createEmptyContext();
+
+        // 2. Build an Authentication (username, credentials, authorities)
+        Authentication auth = new UsernamePasswordAuthenticationToken(
+                "OtherUsername",   // <-- username is different
+                "ignored-password",
+                List.of()
+        );
+        ctx.setAuthentication(auth);
+        SecurityContextHolder.setContext(ctx);
+
+        // initialize other objects needed for tests
+
+        User userIncoming = new User();
+        userIncoming.setUsername("UserName");
+        userIncoming.setPassword("rawPassword");
+        userIncoming.setId(1L);
+
+        User userStored = new User();
+        userStored.setUsername("UserName");
+        userStored.setPassword("hashedPassword");
+        userStored.setId(1L);
+
+        when(userRepository.findByUsername(userIncoming.getUsername())).thenReturn(Optional.of(userStored));
+        when(passwordEncoder.matches("rawPassword", "hashedPassword")).thenReturn(true);
+
+        assertThrows(AccessDeniedException.class, () -> userService.deleteSelf(userIncoming));
+
+        // verify that delete is never called
+        verify(userRepository, never()).delete(anyString());
     }
 
 }
