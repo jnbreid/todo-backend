@@ -13,13 +13,16 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 
 public class UserMapperTest {
 
+    UserMapper userMapper = new UserMapper();
+
+
     @Test
     void fromDTOTest() {
         UserDTO userDTO = new UserDTO();
         userDTO.setUsername("username");
         userDTO.setPassword("password");
 
-        User user = UserMapper.fromDTO(userDTO);
+        User user = userMapper.fromDTO(userDTO);
 
         assertEquals(userDTO.getUsername(), user.getUsername());
         assertEquals(userDTO.getPassword(), user.getPassword());
@@ -33,7 +36,7 @@ public class UserMapperTest {
         user.setPassword("password");
         user.setId(1L);
 
-        UserDTO userDTO = UserMapper.toDTO(user);
+        UserDTO userDTO = userMapper.toDTO(user);
 
         assertEquals(user.getUsername(), userDTO.getUsername());
         assertNull(userDTO.getPassword());
