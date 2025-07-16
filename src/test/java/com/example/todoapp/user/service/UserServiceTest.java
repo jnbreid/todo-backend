@@ -123,6 +123,35 @@ public class UserServiceTest {
         assertThrows(BadCredentialsException.class, () -> userService.authenticate(user.getUsername(), user.getPassword()));
     }
 
+    @Test
+    void findUserIdByUserName_Success() {
+        User user = new User();
+        user.setUsername("UserName");
+        user.setPassword("hashedPassword");
+        user.setId(1L);
+
+        //mock user found
+        when(userRepository.findByUsername(user.getUsername())).thenReturn(Optional.of(user));
+
+        //
+        Long userId = userService.findUserIdByUserName(user.getUsername());
+        assertEquals(user.getId(), userId);
+    }
+
+    @Test
+    void findUserIdByUserName_Failure() {
+        User user = new User();
+        user.setUsername("UserName");
+        user.setPassword("hashedPassword");
+        user.setId(1L);
+
+        //mock user found
+        when(userRepository.findByUsername(user.getUsername())).thenReturn(Optional.empty());
+
+        //
+        assertThrows(IllegalArgumentException.class, () -> userService.findUserIdByUserName(user.getUsername()));
+    }
+
 }
 
 
