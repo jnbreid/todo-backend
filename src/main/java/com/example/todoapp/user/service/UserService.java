@@ -13,7 +13,6 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import java.util.Optional;
 
 @Service
 public class UserService {
@@ -66,10 +65,10 @@ public class UserService {
         String username = delUser.getUsername();
         String rawPassword = delUser.getPassword();
 
-        Optional<User> foundUser = userRepository.findByUsername(username).filter(user -> passwordEncoder.matches(rawPassword, user.getPassword()));
-        if (foundUser.isEmpty()) {
-            throw new BadCredentialsException("Invalid password or username.");
-        }
+        userRepository.findByUsername(username).filter(
+                user -> passwordEncoder.matches(rawPassword, user.getPassword())).orElseThrow(
+                () -> new BadCredentialsException("Invalid password or username.")
+        );
 
         String authUsername = SecurityContextHolder.getContext().getAuthentication().getName();
         if (!authUsername.equals(username)) {
