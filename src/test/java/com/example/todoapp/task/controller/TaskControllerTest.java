@@ -7,8 +7,6 @@ package com.example.todoapp.task.controller;
 
 import com.example.todoapp.config.JacksonConfig;
 import com.example.todoapp.config.RestTestConfig;
-import com.example.todoapp.config.security.JwtTokenUtil;
-import com.example.todoapp.config.security.SecurityConfig;
 import com.example.todoapp.task.Task;
 import com.example.todoapp.task.service.TaskService;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -18,7 +16,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.context.annotation.Import;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
