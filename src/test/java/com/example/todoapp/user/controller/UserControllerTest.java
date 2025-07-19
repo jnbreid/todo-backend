@@ -29,6 +29,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 
+import javax.print.attribute.standard.Media;
 import java.util.List;
 
 import static org.mockito.Mockito.*;
@@ -136,7 +137,7 @@ public class UserControllerTest {
     }
 
     @Test
-    void registerUser_InvalidUsername() throws Exception {
+    void registerUser_Failure_InvalidUsername() throws Exception {
         UserDTO userDTO = new UserDTO();
         userDTO.setUsername("a".repeat(100));
         userDTO.setPassword("password");
@@ -152,6 +153,26 @@ public class UserControllerTest {
                 .content(objectMapper.writeValueAsString(userDTO)))
                 .andExpect(status().isBadRequest())
                 .andExpect(content().string("Username to long. 60 characters max."));
+    }
+
+    @Test
+    void registerUser_Failure_ExistingUser() throws Exception {
+        UserDTO userDTO = new UserDTO();
+        userDTO.setUsername("username");
+        userDTO.setPassword("password");
+
+        User dummy = new User();
+
+        when(userMapper.fromDTO(any(UserDTO.class))).thenReturn(dummy);
+
+        doThrow(new IllegalArgumentException("Creating user failed."))
+                .when(userService).registerUser(dummy);
+
+        mockMvc.perform(post("/api/users/register")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(userDTO)))
+                .andExpect(status().isBadRequest())
+                .andExpect(content().string("Creating user failed."));
 
     }
 
