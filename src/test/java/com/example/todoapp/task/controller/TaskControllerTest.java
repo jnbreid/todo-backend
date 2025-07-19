@@ -12,7 +12,6 @@ import com.example.todoapp.config.security.JwtTokenUtil;
 import com.example.todoapp.config.security.SecurityConfig;
 import com.example.todoapp.task.Task;
 import com.example.todoapp.task.service.TaskService;
-import com.example.todoapp.user.controller.UserController;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -45,7 +44,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
                 classes = SecurityConfig.class
         ))
 @Import({RestTestConfig.class, JacksonConfig.class})
-@AutoConfigureMockMvc(addFilters = false)
+@AutoConfigureMockMvc//(addFilters = false)
 class TaskControllerTest {
 
     @Autowired
@@ -67,7 +66,6 @@ class TaskControllerTest {
 
     private Task task;
     private TaskDTO taskDTO;
-    private String jwtToken;
 
     @BeforeEach
     void setUp() {
@@ -87,10 +85,6 @@ class TaskControllerTest {
         taskDTO.setDeadline(task.getDeadline());
         taskDTO.setComplete(task.getCompleted());
         taskDTO.setUserName("username");
-
-
-
-        jwtToken = "fake-jwt-token";
     }
 
     @Test
@@ -146,7 +140,7 @@ class TaskControllerTest {
     }
 
     @Test
-    @WithMockUser(username = "username", roles = {"USER"})
+    //@WithMockUser(username = "username", roles = {"USER"})
     void getMyTasks_Success() throws Exception {
 
         Task task2 = new Task();
@@ -182,4 +176,21 @@ class TaskControllerTest {
                 .andExpect(jsonPath("$[0].name").value(taskDTO.getName()))
                 .andExpect(jsonPath("$[1].deadline").value(taskDTO2.getDeadline().toString()));
     }
+
+    @Test
+    void getMyTasks_Success_EmptyList() throws Exception {
+        Long userId = task.getUserId();
+
+        List<Task> taskList = new ArrayList<>();
+
+        when(taskMapper.getUserId()).thenReturn(userId);
+        when(taskService.getTasksForUser(userId)).thenReturn(taskList);
+        when(taskMapper.toDTO(any(Task.class))).thenReturn(taskDTO);
+
+        mockMvc.perform(get("/api/tasks/my-tasks"))
+                .andExpect(status().isOk())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$.length()").value(0));
+    }
+
 }
