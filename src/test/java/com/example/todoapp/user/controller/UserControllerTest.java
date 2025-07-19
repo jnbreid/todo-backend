@@ -135,5 +135,25 @@ public class UserControllerTest {
                 .andExpect(status().isCreated());
     }
 
+    @Test
+    void registerUser_InvalidUsername() throws Exception {
+        UserDTO userDTO = new UserDTO();
+        userDTO.setUsername("a".repeat(100));
+        userDTO.setPassword("password");
+
+        User dummyUser = new User();
+        when(userMapper.fromDTO(any(UserDTO.class))).thenReturn(dummyUser);
+
+        doThrow(new IllegalArgumentException("Username to long. 60 characters max."))
+                .when(userService).registerUser(dummyUser);
+
+        mockMvc.perform(post("/api/users/register")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(userDTO)))
+                .andExpect(status().isBadRequest())
+                .andExpect(content().string("Username to long. 60 characters max."));
+
+    }
+
 
 }
