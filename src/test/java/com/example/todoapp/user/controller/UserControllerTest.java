@@ -11,6 +11,7 @@ import com.example.todoapp.config.RestTestConfig;
 import com.example.todoapp.config.security.CustomUserDetailsService;
 import com.example.todoapp.config.security.JwtTokenUtil;
 import com.example.todoapp.config.security.SecurityConfig;
+import com.example.todoapp.user.User;
 import com.example.todoapp.user.service.UserService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
@@ -115,6 +116,24 @@ public class UserControllerTest {
         verify(jwtTokenUtil, never()).generateToken(any());
     }
 
+    @Test
+    void registerUser_Success() throws Exception {
+        UserDTO userDTO = new UserDTO();
+        userDTO.setUsername("newuser");
+        userDTO.setPassword("securePass");
+
+        User user = new User();
+        user.setUsername("newuser");
+        user.setPassword("securePass");
+
+        when(userMapper.fromDTO(userDTO)).thenReturn(user);
+        doNothing().when(userService).registerUser(user);
+
+        mockMvc.perform(post("/api/users/register")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(userDTO)))
+                .andExpect(status().isCreated());
+    }
 
 
 }
