@@ -97,7 +97,7 @@ public class UserControllerTest {
     }
 
     @Test
-    void liginTest_Failure() throws Exception {
+    void loginTest_Failure() throws Exception {
         UserDTO userDTO = new UserDTO();
         userDTO.setUsername("testuser");
         userDTO.setPassword("wrongPassword");
