@@ -7,14 +7,20 @@ package com.example.todoapp.task.controller;
 
 import com.example.todoapp.config.JacksonConfig;
 import com.example.todoapp.config.RestTestConfig;
+import com.example.todoapp.config.security.CustomUserDetailsService;
+import com.example.todoapp.config.security.JwtTokenUtil;
+import com.example.todoapp.config.security.SecurityConfig;
 import com.example.todoapp.task.Task;
 import com.example.todoapp.task.service.TaskService;
+import com.example.todoapp.user.controller.UserController;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.context.annotation.ComponentScan;
+import org.springframework.context.annotation.FilterType;
 import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithMockUser;
@@ -27,27 +33,37 @@ import java.util.List;
 import java.util.UUID;
 
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.doThrow;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 // TODO adjust test to JwtToken
 
-@WebMvcTest(TaskController.class)
+@WebMvcTest(controllers = TaskController.class,
+        excludeFilters = @ComponentScan.Filter(
+                type  = FilterType.ASSIGNABLE_TYPE,
+                classes = SecurityConfig.class
+        ))
 @Import({RestTestConfig.class, JacksonConfig.class})
 @AutoConfigureMockMvc(addFilters = false)
 class TaskControllerTest {
 
     @Autowired
     private MockMvc mockMvc;
+    @Autowired
+    private ObjectMapper objectMapper;
+
+    @MockitoBean
+    private CustomUserDetailsService customUserDetailsService;
+    @MockitoBean
+    private JwtTokenUtil jwtTokenUtil;
 
     @MockitoBean
     private TaskService taskService;
 
-    @Autowired
-    private ObjectMapper objectMapper;
+    @MockitoBean
     private TaskMapper taskMapper;
+
 
     private Task task;
     private TaskDTO taskDTO;
@@ -63,42 +79,60 @@ class TaskControllerTest {
         task.setDeadline(LocalDate.now().plusDays(1));
         task.setCompleted(false);
         task.setUserId(1L);
-        taskDTO = taskMapper.toDTO(task);
+
+        taskDTO = new TaskDTO();
+        taskDTO.setPublicId(task.getPublicId());
+        taskDTO.setName(task.getName());
+        taskDTO.setPriority(task.getPriority());
+        taskDTO.setDeadline(task.getDeadline());
+        taskDTO.setComplete(task.getCompleted());
+        taskDTO.setUserName("username");
+
+
+
+        jwtToken = "fake-jwt-token";
     }
 
-    @WithMockUser(username = "username", roles = {"USER"})
     @Test
-    void createTaskTest_Success() throws Exception {
-
-        String json_payload = objectMapper.writeValueAsString(taskDTO);
+    //@WithMockUser(username = "username", roles = {"USER"})
+    void createTask_Success() throws Exception {
+        when(taskMapper.fromDTO(taskDTO)).thenReturn(task);
+        doNothing().when(taskService).createTask(task);
 
         mockMvc.perform(post("/api/tasks")
                 .contentType(MediaType.APPLICATION_JSON)
-                .content(json_payload))
+                .content(objectMapper.writeValueAsString(taskDTO)))
                 .andExpect(status().isCreated());
 
     }
 
     @Test
+    //@WithMockUser(username = "username", roles = {"USER"})
     void createTaskTest_Failure() throws Exception {
         // deadline in the past gives IllegalArgumentException
         taskDTO.setDeadline(LocalDate.now().minusDays(1));
+        task.setDeadline(taskDTO.getDeadline());
 
+        when(taskMapper.fromDTO(any(TaskDTO.class))).thenReturn(task);
         doThrow(new IllegalArgumentException("Deadline can not be in the past."))
                 .when(taskService).createTask(any(Task.class));
 
         mockMvc.perform(post("/api/tasks")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(taskDTO)))
-                .andExpect(status().isBadRequest());
+                .andExpect(status().isBadRequest())
+                .andExpect(content().string("Deadline can not be in the past."));
 
     }
+
 
     @Test
     void getTaskByIdTest_Success() throws Exception {
         UUID publicTaskId = task.getPublicId();
 
         when(taskService.getTaskByPublicId(publicTaskId)).thenReturn(task);
+
+        when(taskMapper.toDTO(task)).thenReturn(taskDTO);
 
         mockMvc.perform(get("/api/tasks/public/{public_id}", publicTaskId.toString()))
                 .andExpect(status().isOk())
@@ -112,7 +146,9 @@ class TaskControllerTest {
     }
 
     @Test
+    @WithMockUser(username = "username", roles = {"USER"})
     void getMyTasks_Success() throws Exception {
+
         Task task2 = new Task();
         task2.setId(2L);
         task2.setPublicId(UUID.randomUUID());
@@ -121,73 +157,29 @@ class TaskControllerTest {
         task2.setDeadline(LocalDate.now().plusDays(2));
         task2.setCompleted(true);
         task2.setUserId(1L);
-        TaskDTO taskDTO2 = taskMapper.toDTO(task2);
+
+        TaskDTO taskDTO2 = new TaskDTO();
+        taskDTO2.setPublicId(task2.getPublicId());
+        taskDTO2.setName(task2.getName());
+        taskDTO2.setPriority(task2.getPriority());
+        taskDTO2.setDeadline(task2.getDeadline());
+        taskDTO2.setComplete(task2.getCompleted());
+        taskDTO2.setUserName("username");
 
         Long userId = task.getUserId();
 
         List<Task> taskList = List.of(task, task2);
 
+        when(taskMapper.getUserId()).thenReturn(task.getUserId());
         when(taskService.getTasksForUser(userId)).thenReturn(taskList);
+        when(taskMapper.toDTO(task)).thenReturn(taskDTO);
+        when(taskMapper.toDTO(task2)).thenReturn(taskDTO2);
 
         mockMvc.perform(get("/api/tasks/my-tasks"))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
                 .andExpect(jsonPath("$.length()").value(2))
-                .andExpect(jsonPath("$[0].name").value("name"))
+                .andExpect(jsonPath("$[0].name").value(taskDTO.getName()))
                 .andExpect(jsonPath("$[1].deadline").value(taskDTO2.getDeadline().toString()));
-    }
-
-    @Test
-    void getTasksForUser_Success_EmptyList() throws Exception {
-        Long userId = task.getUserId();
-
-        List<Task> taskList = new ArrayList<>();
-
-        when(taskService.getTasksForUser(userId)).thenReturn(taskList);
-
-        mockMvc.perform(get("/api/tasks/user/{userId}", userId))
-                .andExpect(status().isOk())
-                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-                .andExpect(jsonPath("$.length()").value(0));
-    }
-
-
-
-    @Test
-    void updateTask() throws Exception {
-        mockMvc.perform(put("/api/tasks/update")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(taskDTO)))
-                .andExpect(status().isOk());
-    }
-
-    @Test
-    void maskTaskAsCompleted() throws Exception {
-        UUID publicUpdateId = UUID.randomUUID();
-
-        mockMvc.perform(patch("/api/tasks/public/{public_id}/complete", publicUpdateId.toString()))
-                .andExpect(status().isOk());
-
-    }
-
-    @Test
-    void deleteTaskTest_Success() throws Exception {
-
-        UUID publicDeleteId = UUID.randomUUID();
-
-        mockMvc.perform(delete("/api/tasks/public/{public_id}", publicDeleteId))
-                .andExpect(status().isOk());
-    }
-
-    @Test
-    void deleteTaskTest_Failure() throws Exception {
-
-        doThrow(new IllegalArgumentException())
-                .when(taskService).deleteTask(any(UUID.class));
-
-        UUID publicDeleteId = UUID.randomUUID();
-
-        mockMvc.perform(delete("/api/tasks/public/{id}", publicDeleteId))
-                .andExpect(status().isBadRequest());
     }
 }

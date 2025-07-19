@@ -52,6 +52,7 @@ public class UserControllerTest {
     private MockMvc mockMvc;
     @Autowired
     private ObjectMapper objectMapper;
+
     @MockitoBean
     private AuthenticationManager authenticationManager;
     @MockitoBean
