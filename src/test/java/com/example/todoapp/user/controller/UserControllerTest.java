@@ -34,6 +34,7 @@ import java.util.List;
 
 import static org.mockito.Mockito.*;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 import static org.mockito.ArgumentMatchers.any;
@@ -174,6 +175,25 @@ public class UserControllerTest {
                 .andExpect(status().isBadRequest())
                 .andExpect(content().string("Creating user failed."));
 
+    }
+
+    @Test
+    void deleteSelf_Success() throws Exception {
+        UserDTO userDTO = new UserDTO();
+        userDTO.setUsername("user");
+        userDTO.setPassword("password");
+
+        User user = new User();
+        user.setUsername("user");
+        user.setPassword("password");
+
+        when(userMapper.fromDTO(userDTO)).thenReturn(user);
+        doNothing().when(userService).deleteSelf(user);
+
+        mockMvc.perform(delete("/api/users/delete")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(userDTO)))
+                .andExpect(status().isNoContent());
     }
 
 
