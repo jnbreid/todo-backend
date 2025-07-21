@@ -7,6 +7,7 @@ package com.example.todoapp.user.controller;
 
 import com.example.todoapp.user.User;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
@@ -14,7 +15,6 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 public class UserMapperTest {
 
     UserMapper userMapper = new UserMapper();
-
 
     @Test
     void fromDTOTest() {
